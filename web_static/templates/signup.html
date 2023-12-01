@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Wheels - Sign Up</title>
+    <link rel="stylesheet" href="../styles/styles.css">
+</head>
+<body>
+    <main>
+        <section class="hero-section">
+            <div class="hero-content">
+                <p class="logo-text">BOOKING WHEELS</p>
+            </div>
+        </section>
+        <section class="form-section">
+            <div>
+                <h1>User Sign up</h1>
+            </div>
+
+            <form action="" method="GET">
+                <fieldset>
+                    <div>
+                        <label for="f_name">First Name <span>*</span></label>
+                        <input type="text" name="first-name" id="f_name" pattern="^[^0-9]+$" 
+                        placeholder="John" required>
+                    </div>
+                    <div>
+                        <label for="l_name">Last Name <span>*</span></label>
+                        <input type="text" name="last-name" id="l_name" pattern="^[^0-9]+$" 
+                        placeholder="Doe" required>
+                    </div>
+                    <div>
+                        <label for="email">Email <span>*</span></label>
+                        <input type="email" name="email" id="email" placeholder="jdoe@email.com"
+                        required>
+                    </div>
+                    <div>
+                        <label for="phone-number">Phone Number</label>
+                        <input type="tel" name="phone-number" id="phone-number" pattern="^([+]?[\s0-9]+)?(\d{3}|[(]?[0-9]+[)])?([-]?[\s]?[0-9])+$" 
+                        placeholder="+254-743-000-020">
+                    </div>
+                    <div>
+                        <label for="password">Password <span>*</span></label>
+                        <input type="password" name="password" id="password" minlength="4" required>
+                    </div>
+                    <div>
+                        <label for="confirm-password">Confirm Password <span>*</span></label>
+                        <input type="password" name="confirm-password" id="confirm-password" minlength="4" required>
+                    </div>
+                </fieldset>
+                <button type="submit">Create Account</button>
+                <p>Already have an account? <a href="./login_user.html">Log in</a></p>
+                <p><a href="./signup_admin.html">Click here</a> to sign up as an admin</p>
+            </form>
+        </section>
+    </main>
+</body>
+</html>
