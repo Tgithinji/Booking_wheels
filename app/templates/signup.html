@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+        <section class="hero-section">
+            <div class="hero-content">
+                <p class="logo-text">BOOKING WHEELS</p>
+            </div>
+        </section>
+        <section class="form-section">
+            <div>
+                <h1>User Signup</h1>
+            </div>
+
+            <form action="" method="POST">
+                {{ form.hidden_tag() }}
+                <fieldset>
+                    <div>
+                        {{ form.username.label }}<span>*</span>
+                        {{ form.username(class="input-class") }}
+                    </div>
+                    <div>
+                        {{ form.email.label }}<span>*</span>
+                        {{ form.email(class="input-class") }}
+                    </div>
+                    <div>
+                        {{ form.password.label }}<span>*</span>
+                        {{ form.password(class="input-class") }}
+                    </div>
+                    <div>
+                        {{ form.confirm_password.label }}<span>*</span>
+                        {{ form.confirm_password(class="input-class") }}
+                    </div>
+                </fieldset>
+                <div>{{ form.submit(class="sbmt-button") }}</div>
+                <p>Already have an account? <a href="{{ url_for('user_login') }}">Login</a></p>
+                <p>Signup as an admin <a href="{{ url_for('admin_signup') }}">Signup</a></p>
+            </form>
+        </section>
+{% endblock %}
