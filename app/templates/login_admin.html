@@ -1,12 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
-        <section class="hero-section">
-            <div class="hero-content">
-                <p class="logo-text">BOOKING WHEELS</p>
-            </div>
-        </section>
         <section class="form-section">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
             <div>
                 <h1>Admin Login</h1>
             </div>
@@ -17,10 +19,16 @@
                     <div>
                         {{ form.username.label }}<span>*</span>
                         {{ form.username(class="input-class") }}
+                        {% for error in form.username.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                        {% endfor %}
                     </div>
                     <div>
                         {{ form.password.label }}<span>*</span>
                         {{ form.password(class="input-class") }}
+                        {% for error in form.password.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                        {% endfor %}
                     </div>
                     <div>{{ form.remember_me() }} {{ form.remember_me.label }}</div>
                 </fieldset>

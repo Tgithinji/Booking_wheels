@@ -82,6 +82,22 @@ main {
     font-family: "after_shok";
 }
 
+.alert-failed {
+    width: 80%;
+    margin: 20px auto;
+    text-align: center;
+    background-color: #ffcccb;
+    padding: 10px 10px;
+}
+
+.alert-success {
+    width: 80%;
+    margin: 20px auto;
+    text-align: center;
+    background-color: #8fbc8f;
+    padding: 10px 10px;
+}
+
 .form-section {
     display: flex;
     flex-direction: column;

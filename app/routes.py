@@ -15,8 +15,10 @@ def index():
 def admin_signup():
     form = SignupForm()
     if form.validate_on_submit():
-        flash('Account created successfully. Login to continue')
+        flash('Account created successfully. Login to continue', 'success')
         return redirect('/admin_login')
+    else:
+        flash('Registration failed!', 'failed')
     return render_template('signup_admin.html', title='Admin Signup', form=form)
 
 
@@ -24,8 +26,10 @@ def admin_signup():
 def user_signup():
     form = SignupForm()
     if form.validate_on_submit():
-        flash('Account created successfully. Login to continue')
+        flash('Account created successfully. Login to continue', 'success')
         return redirect('/user_login')
+    else:
+        flash('Registration failed!', 'failed')
     return render_template('signup.html', title='Admin Signup', form=form)
 
 
@@ -33,8 +37,10 @@ def user_signup():
 def admin_login():
     form = LoginForm()
     if form.validate_on_submit():
-        flash('Login successful')
+        flash('Login successful!', 'success')
         return redirect('/index')
+    else:
+        flash('Login failed!', 'failed')
     return render_template('login_admin.html', title='Admin Login', form=form)
 
 
@@ -42,6 +48,8 @@ def admin_login():
 def user_login():
     form = LoginForm()
     if form.validate_on_submit():
-        flash('Login successful')
+        flash('Login successful!', 'success')
         return redirect('/index')
+    else:
+        flash('Login failed!', 'failed')
     return render_template('login_user.html', title='User Login', form=form)
