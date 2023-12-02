@@ -12,6 +12,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), index=True, unique=True, nullable=False)
     password_hash = db.Column(db.String(128))
     bookings = db.relationship('Booking', backref='client', lazy='dynamic')
+    is_admin = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
@@ -30,6 +31,7 @@ class Admin(UserMixin, db.Model):
     email = db.Column(db.String(120), index=True, unique=True, nullable=False)
     password_hash = db.Column(db.String(128))
     cars = db.relationship('Car', backref='owner', lazy='dynamic')
+    is_admin = db.Column(db.Boolean, default=True)
 
     def __repr__(self):
         return '<Admin {}>'.format(self.username)

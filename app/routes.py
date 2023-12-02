@@ -1,8 +1,8 @@
 #!/bin/usr/python3
 """routes"""
 from app import app, db
-from flask import render_template, flash, redirect, url_for
-from flask_login import current_user, login_user, logout_user
+from flask import render_template, flash, redirect, url_for, request
+from flask_login import current_user, login_user, logout_user, login_required
 from app.forms import AdminSignupForm, UserSignupForm, LoginForm
 from app.models import User, Admin
 
@@ -74,7 +74,8 @@ def user_login():
             flash('Invalid username or password', 'failed')
             return redirect(url_for('user_login'))
         login_user(user, remember=form.remember_me.data)
-        return redirect(url_for('index'))
+        next_page = request.args.get('next')
+        return redirect(next_page) if next_page else redirect(url_for('index'))
     return render_template('login_user.html', title='User Login', form=form)
 
 
@@ -82,3 +83,13 @@ def user_login():
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
+
+@app.route('/user/<username>')
+@login_required
+def user(username):
+    if current_user.is_admin:
+        user = Admin.query.filter_by(username=username).first_or_404()
+    else:
+        user = User.query.filter_by(username=username).first_or_404()
+    return render_template('profile.html', user=user, title='Account')
