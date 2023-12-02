@@ -8,11 +8,13 @@ from app.forms import SignupForm, LoginForm
 @app.route('/')
 @app.route('/index')
 def index():
+    """Home page route"""
     return render_template('index.html', title='Home')
 
 
 @app.route('/admin_signup', methods=['GET', 'POST'])
 def admin_signup():
+    """Admin registration view function"""
     form = SignupForm()
     if form.validate_on_submit():
         flash('Account created successfully. Login to continue', 'success')
@@ -24,6 +26,7 @@ def admin_signup():
 
 @app.route('/user_signup', methods=['GET', 'POST'])
 def user_signup():
+    """user registration view function"""
     form = SignupForm()
     if form.validate_on_submit():
         flash('Account created successfully. Login to continue', 'success')
@@ -35,6 +38,7 @@ def user_signup():
 
 @app.route('/admin_login', methods=['GET', 'POST'])
 def admin_login():
+    """Admin login view function"""
     form = LoginForm()
     if form.validate_on_submit():
         flash('Login successful!', 'success')
@@ -46,6 +50,7 @@ def admin_login():
 
 @app.route('/user_login', methods=['GET', 'POST'])
 def user_login():
+    """user login view function"""
     form = LoginForm()
     if form.validate_on_submit():
         flash('Login successful!', 'success')
