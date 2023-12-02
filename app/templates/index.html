@@ -12,8 +12,18 @@
         <section class="hero-section">
             <div class="hero-content">
                 <p class="logo-text">BOOKING WHEELS</p>
-            </div>
+            </div> 
         </section>
+        <div>
+            Bookng wheels
+            <a href="{{ url_for('index') }}">Home</a>
+            {% if current_user.is_anonymous %}
+            <a href="{{ url_for('user_login') }}">Login</a>
+            <a href="{{ url_for('admin_login') }}">Admin</a>
+            {% else %}
+            <a href="{{ url_for('logout') }}">Logout</a>
+            {% endif %}
+        </div>
     </main>
 </body>
 </html>

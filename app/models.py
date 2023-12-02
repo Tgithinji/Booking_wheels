@@ -1,10 +1,11 @@
 """Database Models"""
-from app import db
+from app import db, login
 from datetime import datetime
+from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     """User database model"""
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True, nullable=False)
@@ -22,7 +23,7 @@ class User(db.Model):
         return check_password_hash(self.password_hash, password)
 
 
-class Admin(db.Model):
+class Admin(UserMixin, db.Model):
     """Admin database model"""
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True, nullable=False)
@@ -66,3 +67,9 @@ class Booking(db.Model):
 
     def __repr__(self):
         return '<booking at {}>'.format(self.avalable)
+
+
+@login.user_loader
+def load_user(id):
+    """Flask-Login user loader function"""
+    return User.query.get(int(id))

@@ -1,7 +1,8 @@
 """forms module to store web form classes"""
+from app.models import User, Admin
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
-from wtforms.validators import DataRequired, Length, Email, EqualTo
+from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 
 
 class SignupForm(FlaskForm):
@@ -13,6 +14,33 @@ class SignupForm(FlaskForm):
     confirm_password = PasswordField('Confirm Password',
                                      validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Sign up')
+
+
+
+class UserSignupForm(SignupForm):
+    """custom validators for user signup form"""
+    def validate_username(self, username):
+        user = User.query.filter_by(username=username.data).first()
+        if user is not None:
+            raise ValidationError('Please use a different username.')
+
+    def validate_email(self, email):
+        user = User.query.filter_by(email=email.data).first()
+        if user is not None:
+            raise ValidationError('Please use a different email address.')
+
+
+class AdminSignupForm(SignupForm):
+    """custom validators for admin signup form"""
+    def validate_username(self, username):
+        user = Admin.query.filter_by(username=username.data).first()
+        if user is not None:
+            raise ValidationError('Please use a different username.')
+
+    def validate_email(self, email):
+        user = Admin.query.filter_by(email=email.data).first()
+        if user is not None:
+            raise ValidationError('Please use a different email address.')
 
 
 class LoginForm(FlaskForm):
