@@ -33,8 +33,8 @@
                     <div>{{ form.remember_me() }} {{ form.remember_me.label }}</div>
                 </fieldset>
                 <div>{{ form.submit(class="sbmt-button") }}</div>
+                <p>Forgot password? <a href="#">Click here</a></p>
                 <p>Do not have an account account? <a href="{{ url_for('user_signup') }}">Sign Up</a></p>
-                <p>Log in as an admin <a href="{{ url_for('admin_login') }}">Log in</a></p>
             </form>
         </section>
 {% endblock %}

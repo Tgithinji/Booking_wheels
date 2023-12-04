@@ -10,44 +10,42 @@
             {% endif %}
             {% endwith %}
             <div>
-                <h1>Admin Signup</h1>
+                <h1>Add Car</h1>
             </div>
 
             <form action="" method="POST">
                 {{ form.hidden_tag() }}
                 <fieldset>
                     <div>
-                        {{ form.username.label }}<span>*</span>
-                        {{ form.username(class="input-class") }}
-                        {% for error in form.username.errors %}
+                        {{ form.make.label }}<span>*</span>
+                        {{ form.make(class="input-class") }}
+                        {% for error in form.make.errors %}
                         <span style="color: red;">[{{ error }}]</span>
                         {% endfor %}
                     </div>
                     <div>
-                        {{ form.email.label }}<span>*</span>
-                        {{ form.email(class="input-class") }}
-                        {% for error in form.email.errors %}
+                        {{ form.model.label }}<span>*</span>
+                        {{ form.model(class="input-class") }}
+                        {% for error in form.model.errors %}
                         <span style="color: red;">[{{ error }}]</span>
                         {% endfor %}
                     </div>
                     <div>
-                        {{ form.password.label }}<span>*</span>
-                        {{ form.password(class="input-class") }}
-                        {% for error in form.password.errors %}
+                        {{ form.year.label }}<span>*</span>
+                        {{ form.year(class="input-class") }}
+                        {% for error in form.year.errors %}
                         <span style="color: red;">[{{ error }}]</span>
                         {% endfor %}
                     </div>
                     <div>
-                        {{ form.confirm_password.label }}<span>*</span>
-                        {{ form.confirm_password(class="input-class") }}
-                        {% for error in form.confirm_password.errors %}
+                        {{ form.reg_num.label }}<span>*</span>
+                        {{ form.reg_num(class="input-class") }}
+                        {% for error in form.reg_num.errors %}
                         <span style="color: red;">[{{ error }}]</span>
                         {% endfor %}
                     </div>
                 </fieldset>
                 <div>{{ form.submit(class="sbmt-button") }}</div>
-                <p>Already have an account? <a href="{{ url_for('admin_login') }}">Login</a></p>
-                <p>Signup as a user <a href="{{ url_for('admin_signup') }}">Signup</a></p>
             </form>
         </section>
 {% endblock %}

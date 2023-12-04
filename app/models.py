@@ -2,6 +2,7 @@
 from app import db, login
 from datetime import datetime
 from flask_login import UserMixin
+from hashlib import md5
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
@@ -12,7 +13,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), index=True, unique=True, nullable=False)
     password_hash = db.Column(db.String(128))
     bookings = db.relationship('Booking', backref='client', lazy='dynamic')
-    is_admin = db.Column(db.Boolean, default=False)
+    cars = db.relationship('Car', backref='owner', lazy='dynamic')
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
@@ -23,25 +24,10 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
-
-class Admin(UserMixin, db.Model):
-    """Admin database model"""
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), index=True, unique=True, nullable=False)
-    email = db.Column(db.String(120), index=True, unique=True, nullable=False)
-    password_hash = db.Column(db.String(128))
-    cars = db.relationship('Car', backref='owner', lazy='dynamic')
-    is_admin = db.Column(db.Boolean, default=True)
-
-    def __repr__(self):
-        return '<Admin {}>'.format(self.username)
-
-    def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
-
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
-
+    def avatar(self, size):
+        digest = md5(self.email.lower().encode('utf-8')).hexdigest()
+        return 'https://www.gravatar.com/avatar/{}?d=identicon&s={}'.format(
+            digest, size)
 
 
 class Car(db.Model):
@@ -50,9 +36,9 @@ class Car(db.Model):
     make = db.Column(db.String(140), nullable=False)
     model = db.Column(db.String(140), nullable=False)
     year = db.Column(db.String(140), nullable=False)
+    reg_num = db.Column(db.String(140), nullable=False)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    admin_id = db.Column(db.Integer, db.ForeignKey('admin.id'))
-    image_file = db.Column(db.String(20), nullable=False, default='')
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     bookings = db.relationship('Booking', backref='car', lazy='dynamic')
 
     def __repr__(self):
