@@ -1,9 +1,9 @@
 #!/bin/usr/python3
 """routes"""
 from app import app, db
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, flash, redirect, url_for, request, abort
 from flask_login import current_user, login_user, logout_user, login_required
-from app.forms import UserSignupForm, LoginForm, NewCar
+from app.forms import UserSignupForm, LoginForm, NewCar, EditProfileForm
 from app.models import User, Car
 
 
@@ -60,6 +60,23 @@ def profile(username):
     return render_template('profile.html', user=user, title='Account')
 
 
+@app.route('/edit_profile', methods=['GET', 'POST'])
+@login_required
+def edit_profile():
+    form = EditProfileForm()
+    if form.validate_on_submit():
+        current_user.username = form.username.data
+        current_user.email = form.email.data
+        db.session.commit()
+        flash('Your changes have been saved.', 'success')
+        return redirect(url_for('profile', username=current_user.username))
+    elif request.method == 'GET':
+        form.username.data = current_user.username
+        form.email.data = current_user.email
+    return render_template('edit_profile.html', title='Edit Profile',
+                           form=form)
+
+
 @app.route('/cars')
 def view_cars():
     fleet = Car.query.all()
@@ -86,10 +103,47 @@ def new_car():
         db.session.commit()
         flash('Car added successfully!', 'success')
         return redirect(url_for('view_cars'))
-    return render_template('add_new.html', title='Add Car', form=form)
+    return render_template('add_new.html', title='Add Car',
+                           form=form, heading='Add Car')
 
 
 @app.route('/car/<int:car_id>')
 def view_car(car_id):
     car = Car.query.get_or_404(car_id)
     return render_template('view_car.html', car=car, title=car.make)
+
+
+@app.route('/car/<int:car_id>/update', methods=['GET', 'POST'])
+@login_required
+def update_car(car_id):
+    car = Car.query.get_or_404(car_id)
+    if car.owner != current_user:
+        abort(403)
+    form = NewCar()
+    if form.validate_on_submit():
+        car.make = form.make.data
+        car.model = form.model.data
+        car.year = form.year.data
+        car.reg_num = form.reg_num.data
+        db.session.commit()
+        flash('Your changes have been saved.', 'success')
+        return redirect(url_for('manage_cars', id=current_user.id))
+    elif request.method == 'GET':
+        form.make.data = car.make
+        form.model.data = car.model
+        form.year.data = car.year
+        form.reg_num.data = car.reg_num
+    return render_template('add_new.html', title='UpdateCar',
+                           form=form, heading='Update Car')
+
+
+@app.route('/car/<int:car_id>/delete', methods=['GET', 'POST'])
+@login_required
+def delete_car(car_id):
+    car = Car.query.get_or_404(car_id)
+    if car.owner != current_user:
+        abort(403)
+    db.session.delete(car)
+    db.session.commit()
+    flash('{} has been deleted successfully!'.format(car.make), 'success')
+    return redirect(url_for('manage_cars', id=car.owner.id))
