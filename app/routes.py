@@ -56,7 +56,7 @@ def logout():
 @app.route('/profile/<username>')
 @login_required
 def profile(username):
-    user = User.query.filter_by(id=current_user.id).first()
+    user = User.query.filter_by(id=current_user.id).first_or_404()
     return render_template('profile.html', user=user, title='Account')
 
 
@@ -86,7 +86,7 @@ def view_cars():
 @app.route('/cars/<int:user_id>')
 @login_required
 def manage_cars(user_id):
-    user = User.query.filter_by(id=current_user.id).first()
+    user = User.query.filter_by(id=current_user.id).first_or_404()
     fleet = Car.query.filter_by(owner=user).all()
     return render_template('manage_fleet.html', fleet=fleet, title='Manage Fleet')
 
