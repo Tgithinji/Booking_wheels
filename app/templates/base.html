@@ -10,8 +10,45 @@
     <title>Booking Wheels</title>
     {% endif %}
     <link rel="stylesheet" href="../static/styles/styles.css">
+    <script src="https://kit.fontawesome.com/c072e7f21e.js" crossorigin="anonymous"></script>
+    <script src="../static/scripts/nav.js" defer></script>
 </head>
 <body>
+    <header class="header-section flex">
+        <div>
+            <img src="../static/images/logo.png" alt="logo" class="logo">
+        </div>
+
+        <button class="nav-toggle" aria-controls="primary-nav" aria-expanded="false">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+
+        <nav class="nav-section">
+            <ul id="primary-nav" data-visible="false" class="primary-nav flex">
+                <li class="active">
+                    <a href="{{ url_for('index') }}">Home</a>
+                </li>
+                <li>
+                    <a href="{{ url_for('view_cars') }}">Cars</a>
+                </li>
+                {% if current_user.is_anonymous %}
+                <li>
+                    <a href="{{ url_for('user_login') }}">Login</a>
+                </li>
+                {% else %}
+                <li>
+                    <a href="{{ url_for('logout') }}">Logout</a>
+                </li>
+                <li>
+                    <a href="{{ url_for('profile', username=current_user.username) }}">Profile</a>
+                </li>
+                <li>
+                    <a href="{{ url_for('new_car') }}">Add new</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
     <main>
         <section class="hero-section">
             <div class="hero-content">
@@ -19,15 +56,6 @@
             </div>
         </section>
         <div>
-        Booking wheels
-        <a href="{{ url_for('index') }}">Home</a>
-        {% if current_user.is_anonymous %}
-        <a href="{{ url_for('user_login') }}">Login</a>
-        {% else %}
-        <a href="{{ url_for('logout') }}">Logout</a>
-        <a href="{{ url_for('profile', username=current_user.username) }}">Profile</a>
-        {% endif %}
-    </div>
 
         {% block content %}{% endblock %}
     </main>
