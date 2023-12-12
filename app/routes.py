@@ -11,7 +11,7 @@ from app.models import User, Car
 @app.route('/index')
 def index():
     """Home page route"""
-    return render_template('index.html', title='Home')
+    return render_template('index.html', title='Home', section='home')
 
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -27,7 +27,7 @@ def user_signup():
         db.session.commit()
         flash('Account created successfully. Login to continue', 'success')
         return redirect(url_for('user_login'))
-    return render_template('signup.html', title='Admin Signup', form=form)
+    return render_template('signup.html', title='Admin Signup', form=form, section='section')
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -44,7 +44,7 @@ def user_login():
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get('next')
         return redirect(next_page) if next_page else redirect(url_for('index'))
-    return render_template('login_user.html', title='User Login', form=form)
+    return render_template('login_user.html', title='User Login', form=form, section='section')
 
 
 @app.route('/logout')

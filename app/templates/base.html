@@ -37,27 +37,18 @@
                 </li>
                 {% else %}
                 <li>
-                    <a href="{{ url_for('logout') }}">Logout</a>
+                    <a href="{{ url_for('new_car') }}">New</a>
                 </li>
                 <li>
                     <a href="{{ url_for('profile', username=current_user.username) }}">Profile</a>
                 </li>
                 <li>
-                    <a href="{{ url_for('new_car') }}">Add new</a>
+                    <a href="{{ url_for('logout') }}">Logout</a>
                 </li>
                 {% endif %}
             </ul>
         </nav>
     </header>
-    <main>
-        <section class="hero-section">
-            <div class="hero-content">
-                <p class="logo-text">BOOKING WHEELS</p>
-            </div>
-        </section>
-        <div>
-
         {% block content %}{% endblock %}
-    </main>
 </body>
 </html>

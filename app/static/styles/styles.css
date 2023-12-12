@@ -42,7 +42,6 @@ body {
     padding: 0;
     font-family: "faustina", sans-serif;
     font-size: 16px;
-    overflow: hidden;
 }
 
 .flex {
@@ -51,15 +50,19 @@ body {
 }
 
 .logo {
-    width: 15%;
+    width: 3.5rem;
     margin: 1rem;
 }
 
 .header-section {
-    min-height: 70px;
+    position: fixed;
+    width: 100%;
+    max-height: 70px;
     align-items: center;
     justify-content: space-between;
-    padding: 0 24px;
+    background-color: rgba(0, 0, 0, .75);
+    top: 0;
+    left: 0;
 }
 
 .nav-toggle {
@@ -72,7 +75,6 @@ body {
     padding: 0;
     margin: 0;
     background: hsl(0 0% 100% / 0.75%);
-
 }
 
 @supports (backdrop-filter: blur(2rem)) {
@@ -83,7 +85,7 @@ body {
 }
 .primary-nav a {
     text-decoration: none;
-    color: black;
+    color: #fff;
     font-weight: 700;
     transition: 70ms ease-out;
 }
@@ -91,19 +93,24 @@ body {
 .primary-nav a:hover {
     background-color: #f0f0f0;
     padding: 1rem;
-
+    color: black;
 }
 
 @media (max-width: 35em) {
     .primary-nav {
         gap: 2em;
+        font-size:  1.4rem;
         position: fixed;
-        z-index: 100;
+        z-index: 1000;
         inset: 0 0 0 30%;
         flex-direction: column;
         padding: min(20vh, 10rem) 2rem;
         transform: translateX(100%);
         transition: transform 350ms ease-out;
+    }
+    
+    .primary-nav a {
+        color: black;
     }
 
     .primary-nav[data-visible="true"] {
@@ -112,28 +119,43 @@ body {
     .nav-toggle {
         display: block;
         position: absolute;
-        z-index: 999;
+        z-index: 9999;
         background-color: transparent;
         font-size: 2rem;
         border: 0;
         aspect-ratio: 1;
-        top: 2rem;
+        top: 1.3rem;
         right: 2rem;
+        color: #fff;
     }
+}
 
+@media (min-width: 35em) {
+    .primary-nav {
+        padding-block: 1.39rem;
+        padding-inline: clamp(2rem, 5vh, 8rem);
+    }
+}
 main {
     display: flex;
     flex-direction: column;
+}
+
+.hero-home {
+    background-image: url('../images/alex-suprun-A53o1drQS2k-unsplash.jpg');
+    background-size: cover;
+    height: 100vh;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;    
 }
 
 .hero-section {
     background-image: url('../images/alex-suprun-A53o1drQS2k-unsplash.jpg');
     background-size: cover;
     height: 40vh;
-    display: flex;
     justify-content: center;
     align-items: center;
-    
 }
 
 .hero-content {
@@ -147,13 +169,45 @@ main {
 }
 
 
-.logo-text {
+.hero-text {
     font-size: 2rem;
     margin: auto;
     padding: 1rem;
     color: #fff;
     font-weight: bold;
     font-family: "after_shok";
+}
+
+@media (max-width: 35em) {
+    .hero-text {
+        font-size: 1.5rem;
+    }
+}
+
+.links a {
+    text-decoration: none;
+    display: block;
+    font-family: "abhaya", serif;
+    font-size: 1.35rem;
+    padding: 10px 10px;
+    border-radius: 10px;
+    font-weight: 700;
+    transition: all 70ms ease;
+}
+
+.links a:first-child {
+    background-color: #8fbc8f;
+    color: #fff;
+}
+
+.links a:last-child {
+    background-color: #ffcccb;
+    color: #000;
+}
+
+.links a:first-child:hover,
+.links a:last-child:hover {
+    transform: scale(1.1);
 }
 
 .alert-failed {
@@ -225,11 +279,14 @@ h1, form  p {
 }
 
 @media only screen and (min-width: 768px) {
-    main {
+    .main-section {
         flex-direction: row;
     }
     .hero-section {
         height: 100vh;
+        width: 40%;
+    }
+    .hero-home .hero-content {
         width: 40%;
     }
     .hero-content {
