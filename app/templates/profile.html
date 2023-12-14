@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+    {% include 'flash_message.html' %}
     <img src="{{ user.avatar(128) }}">
     <h1>Hi, {{ user.username }}!</h1>
     {% if user == current_user %}

@@ -1,10 +1,34 @@
 {% extends "base.html" %}
 
 {% block content %}
+    {% include 'flash_message.html' %}
     <div>
-        <h1>User: {{ current_user.username }}</h1>
-        {% for car in fleet %}
-        <div>{{ car.owner.username }} {{ car.make }}<a href="{{url_for('view_car', car_id=car.id) }}">View</a></div>
-        {% endfor %}
+        <table>
+            <caption>
+                List of vehicles
+            </caption>
+            <tr>
+                <th>#</th>
+                <th>Vehicle name</th>
+                <th>Reg No.</th>
+                <th>YOM</th>
+                <th>Seats</th>
+                <th>Owner</th>
+                <th>Status</th>
+                <td>Action</td>
+            </tr>
+            {% for car in fleet %}
+            <tr>
+                <td>{{ car.id }}</td>
+                <td>{{ car.make }} {{ car.model }}</td>
+                <td>{{ car.reg_num }}</td>
+                <td>{{ car.year }}</td>
+                <td></td>
+                <td>{{ car.owner.username }}</td>
+                <td></td>
+                <td><a href="{{url_for('view_car', car_id=car.id) }}">View</a></td>
+            </tr>
+            {% endfor %}
+        </table>
     </div>
 {% endblock %}
