@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class='main-section'>
+    {% include '_hero.html' %}
+    <section class="form-section">
+        {% include 'flash_message.html' %}
+        <div>
+            <h1>Book {{ car.make }} {{ car.model }}</h1>
+        </div>
+
+        <form action="" method="POST">
+            {{ form.hidden_tag() }}
+            <fieldset>
+                <div>
+                    {{ form.start_date.label }}<span>*</span>
+                    {{ form.start_date(class="input-class") }}
+                    {% for error in form.start_date.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </div>
+                <div>
+                    {{ form.end_date.label }}<span>*</span>
+                    {{ form.end_date(class="input-class") }}
+                    {% for error in form.end_date.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </div>
+            </fieldset>
+            <div>{{ form.submit(class="sbmt-button") }}</div>
+        </form>
+    </section>
+</main>
+{% endblock %}

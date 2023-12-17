@@ -2,11 +2,11 @@
     max-width: 80%;
     overflow-x: auto;
     margin: auto;
+    margin-top: 100px;
 }
 table {
     width: 80%;
     border-collapse: collapse;
-    margin-top: 100px;
     background: #323232;
     color: #eee;
     padding: 1rem;
@@ -33,6 +33,4 @@ th {
 
 tr:nth-of-type(2n) {
     background: rgba(0, 0, 0, .1)
-    
 }
-

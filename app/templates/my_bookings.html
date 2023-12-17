@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="table-container">
+    {% include 'flash_message.html' %}
+        <table>
+            <caption>
+                List of vehicles
+            </caption>
+            <tr>
+                <th>#</th>
+                <th>Vehicle name</th>
+                <th>Start-date</th>
+                <th>End-date</th>
+                <th>Booking status</th>
+                <th>Status</th>
+            </tr>
+            {% for booking in bookings %}
+            <tr>
+                <td>{{ booking.id }}</td>
+                <td>{{ booking.car.make }} {{ booking.car.model }}</td>
+                <td>{{ booking.start_date }}</td>
+                <td>{{ booking.end_date }}</td>
+                <td>{{ booking.status }}</td>
+                <td>{{ booking.car.owner.username }}</td>
+                <td></td>
+                <td><a href="{{url_for('view_car', car_id=booking.car.id) }}">View</a></td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}

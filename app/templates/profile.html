@@ -7,5 +7,6 @@
     {% if user == current_user %}
     <p><a href="{{ url_for('edit_profile') }}">Edit your profile</a></p>
     <a href="{{ url_for('manage_cars', user_id=current_user.id) }}">Manage Fleet</a>
+    <a href="{{ url_for('my_bookings', user_id=current_user.id) }}">My Bookings</a>
     {% endif %}
 {% endblock %}

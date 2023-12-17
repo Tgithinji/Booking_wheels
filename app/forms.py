@@ -2,7 +2,7 @@
 from app.models import User, Car
 from flask_login import current_user
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, DateField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 
 
@@ -44,6 +44,9 @@ class NewCar(FlaskForm):
     model = StringField('Model', validators=[DataRequired()])
     year = StringField('Year', validators=[DataRequired()])
     reg_num = StringField('Registration number', validators=[DataRequired()])
+    seats = StringField('Seats', validators=[DataRequired()])
+    fuel_type = StringField('Fuel Type', validators=[DataRequired()])
+    mileage = StringField('Mileage', validators=[DataRequired()])
     submit = SubmitField('Add')
 
     def validate_reg_num(self, reg_num):
@@ -68,3 +71,9 @@ class EditProfileForm(FlaskForm):
             user = User.query.filter_by(email=email.data).first()
             if user is not None:
                 raise ValidationError('Please use a different email address.')
+
+
+class BookingForm(FlaskForm):
+    start_date = DateField('Start Date', validators=[DataRequired()])
+    end_date = DateField('End Date', validators=[DataRequired()])
+    submit = SubmitField('Book Now')

@@ -3,8 +3,9 @@
 from app import app, db
 from flask import render_template, flash, redirect, url_for, request, abort
 from flask_login import current_user, login_user, logout_user, login_required
-from app.forms import UserSignupForm, LoginForm, NewCar, EditProfileForm
-from app.models import User, Car
+from app.forms import UserSignupForm, LoginForm, NewCar, EditProfileForm, BookingForm
+from app.models import User, Car, Booking, BookingStatus
+
 
 
 @app.route('/')
@@ -98,13 +99,14 @@ def new_car():
     if form.validate_on_submit():
         car = Car(make=form.make.data, model=form.model.data,
                   year=form.year.data, reg_num=form.reg_num.data,
-                  owner=current_user)
+                  owner=current_user, fuel_type=form.fuel_type.data,
+                  seats=form.seats.data, mileage = form.mileage.data)
         db.session.add(car)
         db.session.commit()
         flash('Car added successfully!', 'success')
         return redirect(url_for('view_cars'))
     return render_template('add_new.html', title='Add Car',
-                           form=form, heading='Add Car')
+                           form=form, heading='Add Car', section='section')
 
 
 @app.route('/car/<int:car_id>')
@@ -125,6 +127,9 @@ def update_car(car_id):
         car.model = form.model.data
         car.year = form.year.data
         car.reg_num = form.reg_num.data
+        car.fuel_type = form.fuel_type
+        car.seats = form.seats
+        car.mileage = form.mileage
         db.session.commit()
         flash('Your changes have been saved.', 'success')
         return redirect(url_for('manage_cars', id=current_user.id))
@@ -133,8 +138,11 @@ def update_car(car_id):
         form.model.data = car.model
         form.year.data = car.year
         form.reg_num.data = car.reg_num
+        form.fuel_type = car.fuel_type
+        form.seats = car.seats
+        form.mileage = car.mileage
     return render_template('add_new.html', title='UpdateCar',
-                           form=form, heading='Update Car')
+                           form=form, heading='Update Car', section='section')
 
 
 @app.route('/car/<int:car_id>/delete', methods=['GET', 'POST'])
@@ -147,3 +155,54 @@ def delete_car(car_id):
     db.session.commit()
     flash('{} has been deleted successfully!'.format(car.make), 'success')
     return redirect(url_for('manage_cars', id=car.owner.id))
+
+
+@app.route('/book/<int:car_id>', methods=['GET', 'POST'])
+@login_required
+def book_car(car_id):
+    car = Car.query.get_or_404(car_id)
+    form = BookingForm()
+
+    if form.validate_on_submit():
+        start_date = form.start_date.data
+        end_date = form.end_date.data
+
+        # Check car availability (you need to implement this logic)
+        if car.is_available(start_date, end_date):
+            booking = Booking(
+                client=current_user,
+                car=car,
+                start_date=start_date,
+                end_date=end_date,
+                status=BookingStatus.PENDING.value
+            )
+            db.session.add(booking)
+            db.session.commit()
+            flash('Booking reques!', 'success')
+            return redirect(url_for('my_bookings', user_id=current_user.id))
+        else:
+            flash('Car is not available for the selected dates.', 'failed')
+
+    return render_template('book_car.html', car=car, form=form)
+
+
+@app.route('/bookings/<int:user_id>')
+@login_required
+def my_bookings(user_id):
+    bookings = current_user.bookings
+    return render_template('my_bookings.html', bookings=bookings)
+
+
+@app.route('/accept_booking/<int:booking_id>')
+@login_required
+def accept_booking(booking_id):
+    booking = Booking.query.get_or_404(booking_id)
+
+    # Check if the logged-in user is the owner of the car
+    if current_user == booking.car.owner:
+        booking.status = BookingStatus.ACCEPTED.value
+        db.session.commit()
+        flash('Booking request accepted!', 'success')
+        return redirect(url_for('my_bookings', current_user.id))
+    else:
+        abort(403)

@@ -1,6 +1,7 @@
 """Database Models"""
 from app import db, login
 from datetime import datetime
+from enum import Enum
 from flask_login import UserMixin
 from hashlib import md5
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -37,19 +38,39 @@ class Car(db.Model):
     model = db.Column(db.String(140), nullable=False)
     year = db.Column(db.String(140), nullable=False)
     reg_num = db.Column(db.String(140), nullable=False)
+    fuel_type = db.Column(db.String(140), nullable=False)
+    mileage = db.Column(db.Integer(), nullable=False)
+    seats= db.Column(db.Integer(), nullable=False)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     bookings = db.relationship('Booking', backref='car', lazy='dynamic')
+
+    def is_available(self, start_date, end_date):
+        """ Check if there are any bookings that overlap with the specified date range """
+        overlapping_bookings = Booking.query.filter(
+            Booking.car == self,
+            Booking.start_date <= end_date,
+            Booking.end_date >= start_date
+        ).all()
+
+        return not overlapping_bookings
 
     def __repr__(self):
         return '<Car {}>'.format(self.make)
 
 
+class BookingStatus(Enum):
+    PENDING = 'pending'
+    AVAILABLE = 'available'
+    BOOKED = 'booked'
+
+
 class Booking(db.Model):
     """Bookings database model"""
     id = db.Column(db.Integer, primary_key=True)
-    avalable = db.Column(db.String(140))
-    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    status = db.Column(db.String(140), default=BookingStatus.AVAILABLE.value)
+    start_date = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    end_date = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     car_id = db.Column(db.Integer, db.ForeignKey('car.id'))
 

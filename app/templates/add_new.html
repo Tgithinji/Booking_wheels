@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+<main class="main-section">
     {% include '_hero.html' %}
     <section class="form-section">
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -16,7 +17,7 @@
 
         <form action="" method="POST">
             {{ form.hidden_tag() }}
-            <fieldset>
+            <fieldset class="fieldset-sctn">
                 <div>
                     {{ form.make.label }}<span>*</span>
                     {{ form.make(class="input-class") }}
@@ -45,8 +46,30 @@
                     <span style="color: red;">[{{ error }}]</span>
                     {% endfor %}
                 </div>
+                <div>
+                    {{ form.mileage.label }}<span>*</span>
+                    {{ form.mileage(class="input-class") }}
+                    {% for error in form.mileage.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </div>
+                <div>
+                    {{ form.fuel_type.label }}<span>*</span>
+                    {{ form.fuel_type(class="input-class") }}
+                    {% for error in form.fuel_type.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </div>
+                <div>
+                    {{ form.seats.label }}<span>*</span>
+                    {{ form.seats(class="input-class") }}
+                    {% for error in form.seats.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </div>
             </fieldset>
             <div>{{ form.submit(class="sbmt-button") }}</div>
         </form>
     </section>
+</mainn">
 {% endblock %}
