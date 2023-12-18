@@ -1,6 +1,5 @@
 # Booking Wheels
 **__Your trusted companion for car hire services.__**
-file:///home/guru/Pictures/Screenshots/Screenshot%20from%202023-12-18%2023-42-24.png
 
 ## Introduction
 Booking Wheels is a car hire service platform where a user is able to sign up, login and book a vhicle for a period of time. A user is also able to list a car for hire. The project is developed as part of my ALX End of Foundations Portfolio.
