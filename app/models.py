@@ -31,6 +31,12 @@ class User(UserMixin, db.Model):
             digest, size)
 
 
+class CarStatus(Enum):
+    PENDING = 'pending'
+    AVAILABLE = 'available'
+    BOOKED = 'booked'
+
+
 class Car(db.Model):
     """Car database model"""
     id = db.Column(db.Integer, primary_key=True)
@@ -41,6 +47,7 @@ class Car(db.Model):
     fuel_type = db.Column(db.String(140), nullable=False)
     mileage = db.Column(db.Integer(), nullable=False)
     seats= db.Column(db.Integer(), nullable=False)
+    status = db.Column(db.String(140), default=CarStatus.AVAILABLE.value)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     bookings = db.relationship('Booking', backref='car', lazy='dynamic')
@@ -60,22 +67,22 @@ class Car(db.Model):
 
 
 class BookingStatus(Enum):
-    PENDING = 'pending'
-    AVAILABLE = 'available'
-    BOOKED = 'booked'
+    PENDING = "pending"
+    ACCEPTED = "accepted"
+    REJECTED = "rejected"
 
 
 class Booking(db.Model):
     """Bookings database model"""
     id = db.Column(db.Integer, primary_key=True)
-    status = db.Column(db.String(140), default=BookingStatus.AVAILABLE.value)
+    status = db.Column(db.String(140), default=BookingStatus.PENDING.value)
     start_date = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     end_date = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     car_id = db.Column(db.Integer, db.ForeignKey('car.id'))
 
     def __repr__(self):
-        return '<booking at {}>'.format(self.avalable)
+        return '<Status {}>'.format(self.status)
 
 
 @login.user_loader

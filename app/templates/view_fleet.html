@@ -23,12 +23,22 @@
                 <td>{{ car.make }} {{ car.model }}</td>
                 <td>{{ car.reg_num }}</td>
                 <td>{{ car.year }}</td>
-                <td></td>
+                <td> {{ car.seats }}</td>
                 <td>{{ car.owner.username }}</td>
-                <td></td>
+                <td>{{ car.status }}</td>
                 <td><a href="{{url_for('view_car', car_id=car.id) }}">View</a></td>
             </tr>
             {% endfor %}
+            <tr>
+                <td colspan="8">
+                    {% if prev_url %}
+                    <a href="{{ prev_url }}">Prev</a>
+                    {% endif %}
+                    {% if next_url %}
+                    <a href="{{ next_url }}">Next</a>
+                    {% endif %}
+                </td>
+            </tr>
         </table>
     </div>
 {% endblock %}

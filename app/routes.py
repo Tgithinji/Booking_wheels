@@ -4,7 +4,7 @@ from app import app, db
 from flask import render_template, flash, redirect, url_for, request, abort
 from flask_login import current_user, login_user, logout_user, login_required
 from app.forms import UserSignupForm, LoginForm, NewCar, EditProfileForm, BookingForm
-from app.models import User, Car, Booking, BookingStatus
+from app.models import User, Car, Booking, BookingStatus, CarStatus
 
 
 
@@ -80,16 +80,35 @@ def edit_profile():
 
 @app.route('/cars')
 def view_cars():
-    fleet = Car.query.all()
-    return render_template('view_fleet.html', fleet=fleet, title='View Fleet')
+    page = request.args.get('page', 1, type=int)
+    fleet = Car.query.paginate(page=page, per_page=app.config['POSTS_PER_PAGE'])
+    next_url = url_for('view_cars', page=fleet.next_num) \
+        if fleet.has_next else None
+    prev_url = url_for('view_cars', page=fleet.prev_num) \
+        if fleet.has_prev else None
+    return render_template('view_fleet.html',
+                           fleet=fleet.items,
+                           title='View Fleet',
+                           next_url=next_url,
+                           prev_url=prev_url)
 
 
 @app.route('/cars/<int:user_id>')
 @login_required
 def manage_cars(user_id):
+    page = request.args.get('page', 1, type=int)
     user = User.query.filter_by(id=current_user.id).first_or_404()
-    fleet = Car.query.filter_by(owner=user).all()
-    return render_template('manage_fleet.html', fleet=fleet, title='Manage Fleet')
+    fleet = Car.query.filter_by(owner=user).paginate(page=page, per_page=app.config['POSTS_PER_PAGE'])
+    next_url = url_for('manage_cars', page=fleet.next_num) \
+        if fleet.has_next else None
+    prev_url = url_for('manage_cars', page=fleet.prev_num) \
+        if fleet.has_prev else None
+
+    return render_template('manage_fleet.html',
+                           fleet=fleet.items,
+                           title='Manage Fleet',
+                           next_url=next_url,
+                           prev_url=prev_url)
 
 
 @app.route('/car/new', methods=['GET', 'POST'])
@@ -176,9 +195,10 @@ def book_car(car_id):
                 end_date=end_date,
                 status=BookingStatus.PENDING.value
             )
+            car.status = CarStatus.PENDING.value
             db.session.add(booking)
             db.session.commit()
-            flash('Booking reques!', 'success')
+            flash('Booking request!', 'success')
             return redirect(url_for('my_bookings', user_id=current_user.id))
         else:
             flash('Car is not available for the selected dates.', 'failed')
@@ -193,6 +213,20 @@ def my_bookings(user_id):
     return render_template('my_bookings.html', bookings=bookings)
 
 
+@app.route('/requests/<int:user_id>')
+@login_required
+def pending_requests(user_id):
+    """
+    Retrieve booking requests for cars owned by the current user (car owner)
+    """
+    car_owner_bookings = Booking.query.join(Car).\
+        filter(Car.owner == current_user,\
+               Booking.status == BookingStatus.PENDING.value).\
+        all()
+
+    return render_template('pending_requests.html', bookings=car_owner_bookings)
+
+
 @app.route('/accept_booking/<int:booking_id>')
 @login_required
 def accept_booking(booking_id):
@@ -201,8 +235,25 @@ def accept_booking(booking_id):
     # Check if the logged-in user is the owner of the car
     if current_user == booking.car.owner:
         booking.status = BookingStatus.ACCEPTED.value
+        booking.car.status = CarStatus.BOOKED.value
         db.session.commit()
         flash('Booking request accepted!', 'success')
-        return redirect(url_for('my_bookings', current_user.id))
+        return redirect(url_for('pending_requests', user_id=current_user.id))
+    else:
+        abort(403)
+
+
+@app.route('/reject_booking/<int:booking_id>')
+@login_required
+def reject_booking(booking_id):
+    booking = Booking.query.get_or_404(booking_id)
+
+    # Check if the logged-in user is the owner of the car
+    if current_user == booking.car.owner:
+        booking.status = BookingStatus.REJECTED.value
+        booking.car.status = CarStatus.AVAILABLE.value
+        db.session.commit()
+        flash('Booking request accepted!', 'success')
+        return redirect(url_for('pending_requests', user_id=current_user.id))
     else:
         abort(403)
