@@ -1,20 +1,23 @@
 """Database Models"""
 from app import db, login
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from flask_login import UserMixin
 from hashlib import md5
+from typing import Optional
 from werkzeug.security import generate_password_hash, check_password_hash
+import sqlalchemy as sa
+import sqlalchemy.orm as so
 
 
 class User(UserMixin, db.Model):
     """User database model"""
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), index=True, unique=True, nullable=False)
-    email = db.Column(db.String(120), index=True, unique=True, nullable=False)
-    password_hash = db.Column(db.String(128))
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    username: so.Mapped[str] = so.mapped_column(sa.String(64), index=True, unique=True)
+    email: so.Mapped[str] = so.mapped_column(sa.String(120), index=True, unique=True)
+    password_hash: so.Mapped[Optional[str]] = so.mapped_column(sa.String(128))
     bookings = db.relationship('Booking', backref='client', lazy='dynamic')
-    cars = db.relationship('Car', backref='owner', lazy='dynamic')
+    cars: so.WriteOnlyMapped['Car'] = so.relationship(back_populates='owner', lazy='dynamic')
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
@@ -39,18 +42,20 @@ class CarStatus(Enum):
 
 class Car(db.Model):
     """Car database model"""
-    id = db.Column(db.Integer, primary_key=True)
-    make = db.Column(db.String(140), nullable=False)
-    model = db.Column(db.String(140), nullable=False)
-    year = db.Column(db.String(140), nullable=False)
-    reg_num = db.Column(db.String(140), nullable=False)
-    fuel_type = db.Column(db.String(140), nullable=False)
-    mileage = db.Column(db.Integer(), nullable=False)
-    seats= db.Column(db.Integer(), nullable=False)
-    status = db.Column(db.String(140), default=CarStatus.AVAILABLE.value)
-    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    __tablename__ = 'car'
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    make: so.Mapped[str] = so.mapped_column(sa.String(140))
+    model: so.Mapped[str] = so.mapped_column(sa.String(140))
+    year: so.Mapped[str] = so.mapped_column(sa.String(140))
+    reg_num: so.Mapped[str] = so.mapped_column(sa.String(140))
+    fuel_type: so.Mapped[str] = so.mapped_column(sa.String(140))
+    mileage: so.Mapped[str] = so.mapped_column(sa.String(140))
+    status: so.Mapped[str] = so.mapped_column(sa.String(140), default=CarStatus.AVAILABLE.value)
+    timestamp:so.Mapped[datetime] = so.mapped_column(
+        index=True, default=lambda: datetime.now(timezone.utc))
+    user_id:so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True)
     bookings = db.relationship('Booking', backref='car', lazy='dynamic')
+    owner: so.Mapped[User] = so.relationship(back_populates='cars')
 
     def is_available(self, start_date, end_date):
         """ Check if there are any bookings that overlap with the specified date range """
