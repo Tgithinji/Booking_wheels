@@ -5,3 +5,29 @@
     color: #eee;
     padding: 1rem;
 }
+
+.profile-section {
+    margin: 100px;
+    max-width: 80%;
+    padding: 1rem;
+}
+
+.profile-links a {
+    text-decoration: none;
+    display: block;
+    font-family: "abhaya", serif;
+    font-size: 1.35rem;
+    padding: 10px 10px;
+    border-radius: 10px;
+    font-weight: 700;
+    transition: all 70ms ease;
+}
+
+.profile-links a {
+    background-color: #8fbc8f;
+    color: #fff;
+}
+
+.profile-links a:hover {
+    transform: scale(1.1);
+}

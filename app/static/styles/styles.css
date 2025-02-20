@@ -310,3 +310,11 @@ h1, form  p {
         grid-column-end: 3;
     }
 }
+
+.errors {
+    border: 2px 2px #000;
+    margin: 100px;
+    max-width: 80%;
+    padding: 1rem;
+    text-align: center;
+}

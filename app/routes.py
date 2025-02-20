@@ -63,8 +63,10 @@ def logout():
 @app.route('/profile/<username>')
 @login_required
 def profile(username):
-    user = User.query.filter_by(id=current_user.id).first_or_404()
-    return render_template('profile.html', user=user, title='Account')
+    user = db.first_or_404(
+        sa.select(User).where(User.username == username)
+    )
+    return render_template('profile.html', user=user, title='Profile')
 
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
