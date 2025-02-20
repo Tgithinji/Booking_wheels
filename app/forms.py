@@ -4,7 +4,8 @@ from flask_login import current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, DateField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
-
+from app import db
+import sqlalchemy as sa
 
 class SignupForm(FlaskForm):
     """Registration form"""
@@ -21,12 +22,16 @@ class SignupForm(FlaskForm):
 class UserSignupForm(SignupForm):
     """custom validators for user signup form"""
     def validate_username(self, username):
-        user = User.query.filter_by(username=username.data).first()
+        user = db.session.scalar(
+            sa.select(User).where(User.username == username.data)
+        )
         if user is not None:
             raise ValidationError('Please use a different username.')
 
     def validate_email(self, email):
-        user = User.query.filter_by(email=email.data).first()
+        user = db.session.scalar(
+            sa.select(User).where(User.email == email.data)
+        )
         if user is not None:
             raise ValidationError('Please use a different email address.')
 

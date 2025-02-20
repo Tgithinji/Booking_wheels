@@ -5,7 +5,8 @@ from flask import render_template, flash, redirect, url_for, request, abort
 from flask_login import current_user, login_user, logout_user, login_required
 from app.forms import UserSignupForm, LoginForm, NewCar, EditProfileForm, BookingForm
 from app.models import User, Car, Booking, BookingStatus, CarStatus
-
+import sqlalchemy as sa
+from urllib.parse import urlsplit
 
 
 @app.route('/')
@@ -38,13 +39,18 @@ def user_login():
         return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
+        user = db.session.scalar(
+            sa.select(User).where(User.username == form.username.data)
+        )
         if user is None or not user.check_password(form.password.data):
             flash('Invalid username or password', 'failed')
             return redirect(url_for('user_login'))
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get('next')
-        return redirect(next_page) if next_page else redirect(url_for('index'))
+        if not next_page or urlsplit(next_page).netloc != '':
+            next_page = url_for('index')
+        return redirect(next_page)
+        #return redirect(next_page) if next_page else redirect(url_for('index'))
     return render_template('login_user.html', title='User Login', form=form, section='section')
 
 

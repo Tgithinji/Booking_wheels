@@ -16,7 +16,7 @@ class User(UserMixin, db.Model):
     username: so.Mapped[str] = so.mapped_column(sa.String(64), index=True, unique=True)
     email: so.Mapped[str] = so.mapped_column(sa.String(120), index=True, unique=True)
     password_hash: so.Mapped[Optional[str]] = so.mapped_column(sa.String(128))
-    bookings = db.relationship('Booking', backref='client', lazy='dynamic')
+    # bookings = db.relationship('Booking', backref='client', lazy='dynamic')
     cars: so.WriteOnlyMapped['Car'] = so.relationship(back_populates='owner', lazy='dynamic')
 
     def __repr__(self):
@@ -28,10 +28,10 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
-    def avatar(self, size):
-        digest = md5(self.email.lower().encode('utf-8')).hexdigest()
-        return 'https://www.gravatar.com/avatar/{}?d=identicon&s={}'.format(
-            digest, size)
+    # def avatar(self, size):
+    #     digest = md5(self.email.lower().encode('utf-8')).hexdigest()
+    #     return 'https://www.gravatar.com/avatar/{}?d=identicon&s={}'.format(
+    #         digest, size)
 
 
 class CarStatus(Enum):
@@ -54,18 +54,18 @@ class Car(db.Model):
     timestamp:so.Mapped[datetime] = so.mapped_column(
         index=True, default=lambda: datetime.now(timezone.utc))
     user_id:so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True)
-    bookings = db.relationship('Booking', backref='car', lazy='dynamic')
+    # bookings = db.relationship('Booking', backref='car', lazy='dynamic')
     owner: so.Mapped[User] = so.relationship(back_populates='cars')
 
-    def is_available(self, start_date, end_date):
-        """ Check if there are any bookings that overlap with the specified date range """
-        overlapping_bookings = Booking.query.filter(
-            Booking.car == self,
-            Booking.start_date <= end_date,
-            Booking.end_date >= start_date
-        ).all()
+    # def is_available(self, start_date, end_date):
+    #     """ Check if there are any bookings that overlap with the specified date range """
+    #     overlapping_bookings = Booking.query.filter(
+    #         Booking.car == self,
+    #         Booking.start_date <= end_date,
+    #         Booking.end_date >= start_date
+    #     ).all()
 
-        return not overlapping_bookings
+        # return not overlapping_bookings
 
     def __repr__(self):
         return '<Car {}>'.format(self.make)
@@ -93,4 +93,4 @@ class Booking(db.Model):
 @login.user_loader
 def load_user(id):
     """Flask-Login user loader function"""
-    return User.query.get(int(id))
+    return db.session.get(User, int(id))
