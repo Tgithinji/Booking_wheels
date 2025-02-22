@@ -109,8 +109,11 @@ def view_cars():
 @app.route('/cars/<int:user_id>')
 @login_required
 def manage_cars(user_id):
+    user = db.first_or_404(
+        sa.select(User).where(User.id == user_id)
+    )
     page = request.args.get('page', 1, type=int)
-    query = sa.select(Car).where(Car.owner == current_user).order_by(Car.timestamp.desc())
+    query = user.cars.select().order_by(Car.timestamp.desc())
     fleet = db.paginate(
         query, page=page,
         per_page=app.config['POSTS_PER_PAGE'], error_out=False
