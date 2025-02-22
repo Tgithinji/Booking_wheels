@@ -49,6 +49,7 @@ class Car(db.Model):
     reg_num: so.Mapped[str] = so.mapped_column(sa.String(140))
     fuel_type: so.Mapped[str] = so.mapped_column(sa.String(140))
     mileage: so.Mapped[str] = so.mapped_column(sa.String(140))
+    seats: so.Mapped[str] = so.mapped_column(sa.String(50))
     status: so.Mapped[str] = so.mapped_column(sa.String(140), default=CarStatus.AVAILABLE.value)
     timestamp:so.Mapped[datetime] = so.mapped_column(
         index=True, default=lambda: datetime.now(timezone.utc))

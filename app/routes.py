@@ -89,28 +89,34 @@ def edit_profile():
 @app.route('/cars')
 def view_cars():
     page = request.args.get('page', 1, type=int)
-    fleet = Car.query.paginate(page=page, per_page=app.config['POSTS_PER_PAGE'])
-    next_url = url_for('view_cars', page=fleet.next_num) \
-        if fleet.has_next else None
-    prev_url = url_for('view_cars', page=fleet.prev_num) \
-        if fleet.has_prev else None
-    return render_template('view_fleet.html',
-                           fleet=fleet.items,
-                           title='View Fleet',
-                           next_url=next_url,
-                           prev_url=prev_url)
+    query = sa.select(Car).order_by(Car.timestamp.desc())
+    fleet = db.paginate(
+        query, page=page, per_page=app.config['POSTS_PER_PAGE'],
+        error_out=False
+    )
+    next_url = url_for('view_cars', page=fleet.next_num) if fleet.has_next else None
+    prev_url = url_for('view_cars', page=fleet.prev_num) if fleet.has_prev else None
+
+    return render_template(
+        'view_fleet.html',
+        title='Fleet',
+        fleet=fleet.items,
+        next_url=next_url,
+        prev_url=prev_url
+    )
 
 
 @app.route('/cars/<int:user_id>')
 @login_required
 def manage_cars(user_id):
     page = request.args.get('page', 1, type=int)
-    user = User.query.filter_by(id=current_user.id).first_or_404()
-    fleet = Car.query.filter_by(owner=user).paginate(page=page, per_page=app.config['POSTS_PER_PAGE'])
-    next_url = url_for('manage_cars', page=fleet.next_num) \
-        if fleet.has_next else None
-    prev_url = url_for('manage_cars', page=fleet.prev_num) \
-        if fleet.has_prev else None
+    query = sa.select(Car).where(Car.owner == current_user).order_by(Car.timestamp.desc())
+    fleet = db.paginate(
+        query, page=page,
+        per_page=app.config['POSTS_PER_PAGE'], error_out=False
+    )
+    next_url = url_for('manage_cars', user_id=current_user.id , page=fleet.next_num) if fleet.has_next else None
+    prev_url = url_for('manage_cars', user_id=current_user.id, page=fleet.prev_num) if fleet.has_prev else None
 
     return render_template('manage_fleet.html',
                            fleet=fleet.items,
@@ -138,14 +144,18 @@ def new_car():
 
 @app.route('/car/<int:car_id>')
 def view_car(car_id):
-    car = Car.query.get_or_404(car_id)
+    car = db.first_or_404(
+        sa.select(Car).where(Car.id == car_id)
+    )
     return render_template('view_car.html', car=car, title=car.make)
 
 
 @app.route('/car/<int:car_id>/update', methods=['GET', 'POST'])
 @login_required
 def update_car(car_id):
-    car = Car.query.get_or_404(car_id)
+    car = db.first_or_404(
+        sa.select(Car).where(Car.id == car_id)
+    )
     if car.owner != current_user:
         abort(403)
     form = NewCar()
@@ -154,20 +164,20 @@ def update_car(car_id):
         car.model = form.model.data
         car.year = form.year.data
         car.reg_num = form.reg_num.data
-        car.fuel_type = form.fuel_type
-        car.seats = form.seats
-        car.mileage = form.mileage
+        car.fuel_type = form.fuel_type.data
+        car.seats = form.seats.data
+        car.mileage = form.mileage.data
         db.session.commit()
         flash('Your changes have been saved.', 'success')
-        return redirect(url_for('manage_cars', id=current_user.id))
+        return redirect(url_for('view_car', car_id=car_id))
     elif request.method == 'GET':
         form.make.data = car.make
         form.model.data = car.model
         form.year.data = car.year
         form.reg_num.data = car.reg_num
-        form.fuel_type = car.fuel_type
-        form.seats = car.seats
-        form.mileage = car.mileage
+        form.fuel_type.data = car.fuel_type
+        form.seats.data = car.seats
+        form.mileage.data = car.mileage
     return render_template('add_new.html', title='UpdateCar',
                            form=form, heading='Update Car', section='section')
 
@@ -175,13 +185,15 @@ def update_car(car_id):
 @app.route('/car/<int:car_id>/delete', methods=['GET', 'POST'])
 @login_required
 def delete_car(car_id):
-    car = Car.query.get_or_404(car_id)
+    car = db.first_or_404(
+        sa.select(Car).where(Car.id == car_id)
+    )
     if car.owner != current_user:
         abort(403)
     db.session.delete(car)
     db.session.commit()
     flash('{} has been deleted successfully!'.format(car.make), 'success')
-    return redirect(url_for('manage_cars', id=car.owner.id))
+    return redirect(url_for('manage_cars', user_id=current_user.id))
 
 
 @app.route('/book/<int:car_id>', methods=['GET', 'POST'])

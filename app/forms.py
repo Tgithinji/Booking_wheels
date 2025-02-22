@@ -55,7 +55,9 @@ class NewCar(FlaskForm):
     submit = SubmitField('Add')
 
     def validate_reg_num(self, reg_num):
-        car = Car.query.filter_by(reg_num=reg_num.data).first()
+        car = db.session.scalar(
+            sa.select(Car).where(Car.reg_num == reg_num.data)
+        )
         if car is not None:
             raise ValidationError('Please use a different registration number.')
 

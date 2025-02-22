@@ -22,8 +22,8 @@
                 <td>{{ car.make }} {{ car.model }}</td>
                 <td>{{ car.reg_num }}</td>
                 <td>{{ car.year }}</td>
-                <td></td>
-                <td></td>
+                <td>{{ car.seats }}</td>
+                <td>{{ car.status }}</td>
                 <td><a href="{{url_for('view_car', car_id=car.id) }}">View</a></td>
             </tr>
             {% endfor %}
