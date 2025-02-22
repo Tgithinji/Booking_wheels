@@ -1,6 +1,6 @@
 """Database Models"""
 from app import db, login
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from enum import Enum
 from flask_login import UserMixin
 from hashlib import md5
@@ -16,8 +16,8 @@ class User(UserMixin, db.Model):
     username: so.Mapped[str] = so.mapped_column(sa.String(64), index=True, unique=True)
     email: so.Mapped[str] = so.mapped_column(sa.String(120), index=True, unique=True)
     password_hash: so.Mapped[Optional[str]] = so.mapped_column(sa.String(128))
-    # bookings = db.relationship('Booking', backref='client', lazy='dynamic')
     cars: so.WriteOnlyMapped['Car'] = so.relationship(back_populates='owner', lazy='dynamic')
+    bookings: so.WriteOnlyMapped['Booking'] = so.relationship(back_populates='renter', lazy='dynamic')
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
@@ -54,31 +54,50 @@ class Car(db.Model):
     timestamp:so.Mapped[datetime] = so.mapped_column(
         index=True, default=lambda: datetime.now(timezone.utc))
     user_id:so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True)
-    # bookings = db.relationship('Booking', backref='car', lazy='dynamic')
     owner: so.Mapped[User] = so.relationship(back_populates='cars')
+    bookings: so.WriteOnlyMapped['Booking'] = so.relationship(back_populates='car', lazy='dynamic')
 
     def __repr__(self):
         return '<Car {}>'.format(self.make)
 
 
-# class BookingStatus(Enum):
-#     PENDING = "pending"
-#     ACCEPTED = "accepted"
-#     REJECTED = "rejected"
+class BookingStatus(Enum):
+    PENDING = "pending"
+    ACCEPTED = "accepted"
+    REJECTED = "rejected"
 
 
-# class Booking(db.Model):
-#     """Bookings database model"""
-#     id: so M
-#     # id = db.Column(db.Integer, primary_key=True)
-#     # status = db.Column(db.String(140), default=BookingStatus.PENDING.value)
-#     # start_date = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-#     # end_date = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-#     # user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-#     # car_id = db.Column(db.Integer, db.ForeignKey('car.id'))
+class Booking(db.Model):
+    """Bookings database model"""
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    car_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Car.id), index=True)
+    renter_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True)
+    start_date: so.Mapped[datetime] = so.mapped_column(
+        index=True, default=lambda: datetime.now(timezone.utc)
+    )
+    end_date: so.Mapped[datetime] = so.mapped_column(
+        index=True, default=lambda: datetime.now(timezone.utc) + timedelta(days=3)
+    )
+    status: so.Mapped[str] = so.mapped_column(sa.String(140), default=BookingStatus.PENDING.value)
+    timestamp:so.Mapped[datetime] = so.mapped_column(
+        index=True, default=lambda: datetime.now(timezone.utc),
+        server_default=sa.func.now())
+   
+    renter:so.Mapped[User] = so.relationship(back_populates='bookings')
+    car: so.Mapped[Car] = so.relationship(back_populates='bookings')
 
-#     def __repr__(self):
-#         return '<Status {}>'.format(self.status)
+    @staticmethod
+    def is_available(car_id, start_date, end_date):
+        query = sa.select(Booking).where(
+            Booking.car_id == car_id,
+            Booking.status == BookingStatus.ACCEPTED.value,
+            Booking.start_date < end_date,
+            Booking.end_date > start_date
+        )
+        return db.session.scalar(query) is None
+
+    def __repr__(self):
+        return '<Status {}>'.format(self.status)
 
 
 @login.user_loader

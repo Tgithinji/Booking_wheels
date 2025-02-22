@@ -22,7 +22,7 @@
                 <td>{{ booking.start_date }}</td>
                 <td>{{ booking.end_date }}</td>
                 <td>{{ booking.status }}</td>
-                <td>{{ booking.client.username }}</td>
+                <td>{{ booking.renter.username }}</td>
                 <td colspan="2">
                     <a href="{{ url_for('accept_booking', booking_id=booking.id) }}">Accept</a>
                     <a href="{{ url_for('reject_booking', booking_id=booking.id) }}">Reject</a>
