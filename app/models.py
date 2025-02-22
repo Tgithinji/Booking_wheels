@@ -57,37 +57,28 @@ class Car(db.Model):
     # bookings = db.relationship('Booking', backref='car', lazy='dynamic')
     owner: so.Mapped[User] = so.relationship(back_populates='cars')
 
-    # def is_available(self, start_date, end_date):
-    #     """ Check if there are any bookings that overlap with the specified date range """
-    #     overlapping_bookings = Booking.query.filter(
-    #         Booking.car == self,
-    #         Booking.start_date <= end_date,
-    #         Booking.end_date >= start_date
-    #     ).all()
-
-        # return not overlapping_bookings
-
     def __repr__(self):
         return '<Car {}>'.format(self.make)
 
 
-class BookingStatus(Enum):
-    PENDING = "pending"
-    ACCEPTED = "accepted"
-    REJECTED = "rejected"
+# class BookingStatus(Enum):
+#     PENDING = "pending"
+#     ACCEPTED = "accepted"
+#     REJECTED = "rejected"
 
 
-class Booking(db.Model):
-    """Bookings database model"""
-    id = db.Column(db.Integer, primary_key=True)
-    status = db.Column(db.String(140), default=BookingStatus.PENDING.value)
-    start_date = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    end_date = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    car_id = db.Column(db.Integer, db.ForeignKey('car.id'))
+# class Booking(db.Model):
+#     """Bookings database model"""
+#     id: so M
+#     # id = db.Column(db.Integer, primary_key=True)
+#     # status = db.Column(db.String(140), default=BookingStatus.PENDING.value)
+#     # start_date = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+#     # end_date = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+#     # user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+#     # car_id = db.Column(db.Integer, db.ForeignKey('car.id'))
 
-    def __repr__(self):
-        return '<Status {}>'.format(self.status)
+#     def __repr__(self):
+#         return '<Status {}>'.format(self.status)
 
 
 @login.user_loader

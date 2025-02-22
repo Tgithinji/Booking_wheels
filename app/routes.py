@@ -4,7 +4,7 @@ from app import app, db
 from flask import render_template, flash, redirect, url_for, request, abort
 from flask_login import current_user, login_user, logout_user, login_required
 from app.forms import UserSignupForm, LoginForm, NewCar, EditProfileForm, BookingForm
-from app.models import User, Car, Booking, BookingStatus, CarStatus
+from app.models import User, Car, CarStatus
 import sqlalchemy as sa
 from urllib.parse import urlsplit
 
@@ -199,84 +199,84 @@ def delete_car(car_id):
     return redirect(url_for('manage_cars', user_id=current_user.id))
 
 
-@app.route('/book/<int:car_id>', methods=['GET', 'POST'])
-@login_required
-def book_car(car_id):
-    car = Car.query.get_or_404(car_id)
-    form = BookingForm()
+# @app.route('/book/<int:car_id>', methods=['GET', 'POST'])
+# @login_required
+# def book_car(car_id):
+#     car = Car.query.get_or_404(car_id)
+#     form = BookingForm()
 
-    if form.validate_on_submit():
-        start_date = form.start_date.data
-        end_date = form.end_date.data
+#     if form.validate_on_submit():
+#         start_date = form.start_date.data
+#         end_date = form.end_date.data
 
-        # Check car availability (you need to implement this logic)
-        if car.is_available(start_date, end_date):
-            booking = Booking(
-                client=current_user,
-                car=car,
-                start_date=start_date,
-                end_date=end_date,
-                status=BookingStatus.PENDING.value
-            )
-            car.status = CarStatus.PENDING.value
-            db.session.add(booking)
-            db.session.commit()
-            flash('Booking request!', 'success')
-            return redirect(url_for('my_bookings', user_id=current_user.id))
-        else:
-            flash('Car is not available for the selected dates.', 'failed')
+#         # Check car availability (you need to implement this logic)
+#         if car.is_available(start_date, end_date):
+#             booking = Booking(
+#                 client=current_user,
+#                 car=car,
+#                 start_date=start_date,
+#                 end_date=end_date,
+#                 status=BookingStatus.PENDING.value
+#             )
+#             car.status = CarStatus.PENDING.value
+#             db.session.add(booking)
+#             db.session.commit()
+#             flash('Booking request!', 'success')
+#             return redirect(url_for('my_bookings', user_id=current_user.id))
+#         else:
+#             flash('Car is not available for the selected dates.', 'failed')
 
-    return render_template('book_car.html', car=car, form=form)
-
-
-@app.route('/bookings/<int:user_id>')
-@login_required
-def my_bookings(user_id):
-    bookings = current_user.bookings
-    return render_template('my_bookings.html', bookings=bookings)
+#     return render_template('book_car.html', car=car, form=form)
 
 
-@app.route('/requests/<int:user_id>')
-@login_required
-def pending_requests(user_id):
-    """
-    Retrieve booking requests for cars owned by the current user (car owner)
-    """
-    car_owner_bookings = Booking.query.join(Car).\
-        filter(Car.owner == current_user,\
-               Booking.status == BookingStatus.PENDING.value).\
-        all()
-
-    return render_template('pending_requests.html', bookings=car_owner_bookings)
+# @app.route('/bookings/<int:user_id>')
+# @login_required
+# def my_bookings(user_id):
+#     bookings = current_user.bookings
+#     return render_template('my_bookings.html', bookings=bookings)
 
 
-@app.route('/accept_booking/<int:booking_id>')
-@login_required
-def accept_booking(booking_id):
-    booking = Booking.query.get_or_404(booking_id)
+# @app.route('/requests/<int:user_id>')
+# @login_required
+# def pending_requests(user_id):
+#     """
+#     Retrieve booking requests for cars owned by the current user (car owner)
+#     """
+#     car_owner_bookings = Booking.query.join(Car).\
+#         filter(Car.owner == current_user,\
+#                Booking.status == BookingStatus.PENDING.value).\
+#         all()
 
-    # Check if the logged-in user is the owner of the car
-    if current_user == booking.car.owner:
-        booking.status = BookingStatus.ACCEPTED.value
-        booking.car.status = CarStatus.BOOKED.value
-        db.session.commit()
-        flash('Booking request accepted!', 'success')
-        return redirect(url_for('pending_requests', user_id=current_user.id))
-    else:
-        abort(403)
+#     return render_template('pending_requests.html', bookings=car_owner_bookings)
 
 
-@app.route('/reject_booking/<int:booking_id>')
-@login_required
-def reject_booking(booking_id):
-    booking = Booking.query.get_or_404(booking_id)
+# @app.route('/accept_booking/<int:booking_id>')
+# @login_required
+# def accept_booking(booking_id):
+#     booking = Booking.query.get_or_404(booking_id)
 
-    # Check if the logged-in user is the owner of the car
-    if current_user == booking.car.owner:
-        booking.status = BookingStatus.REJECTED.value
-        booking.car.status = CarStatus.AVAILABLE.value
-        db.session.commit()
-        flash('Booking request accepted!', 'success')
-        return redirect(url_for('pending_requests', user_id=current_user.id))
-    else:
-        abort(403)
+#     # Check if the logged-in user is the owner of the car
+#     if current_user == booking.car.owner:
+#         booking.status = BookingStatus.ACCEPTED.value
+#         booking.car.status = CarStatus.BOOKED.value
+#         db.session.commit()
+#         flash('Booking request accepted!', 'success')
+#         return redirect(url_for('pending_requests', user_id=current_user.id))
+#     else:
+#         abort(403)
+
+
+# @app.route('/reject_booking/<int:booking_id>')
+# @login_required
+# def reject_booking(booking_id):
+#     booking = Booking.query.get_or_404(booking_id)
+
+#     # Check if the logged-in user is the owner of the car
+#     if current_user == booking.car.owner:
+#         booking.status = BookingStatus.REJECTED.value
+#         booking.car.status = CarStatus.AVAILABLE.value
+#         db.session.commit()
+#         flash('Booking request accepted!', 'success')
+#         return redirect(url_for('pending_requests', user_id=current_user.id))
+#     else:
+#         abort(403)
