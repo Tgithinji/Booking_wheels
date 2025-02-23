@@ -90,7 +90,9 @@ def edit_profile():
 @app.route('/cars')
 def view_cars():
     page = request.args.get('page', 1, type=int)
-    query = sa.select(Car).order_by(Car.timestamp.desc())
+    query = sa.select(Car).where(
+        Car.status == CarStatus.AVAILABLE.value
+    ).order_by(Car.timestamp.desc())
     fleet = db.paginate(
         query, page=page, per_page=app.config['POSTS_PER_PAGE'],
         error_out=False
@@ -255,7 +257,7 @@ def pending_requests(user_id):
         .join(Car)
         .filter(
             Car.user_id == current_user.id,
-            Booking.status == "pending"
+            Booking.status == BookingStatus.PENDING.value
         )
         .options(joinedload(Booking.renter)).all()
     )
@@ -265,7 +267,9 @@ def pending_requests(user_id):
 @app.route('/accept_booking/<int:booking_id>')
 @login_required
 def accept_booking(booking_id):
-    booking = Booking.query.get_or_404(booking_id)
+    booking = db.first_or_404(
+        sa.select(Booking).where(Booking.id == booking_id)
+    )
 
     # Check if the logged-in user is the owner of the car
     if current_user == booking.car.owner:
@@ -281,14 +285,37 @@ def accept_booking(booking_id):
 @app.route('/reject_booking/<int:booking_id>')
 @login_required
 def reject_booking(booking_id):
-    booking = Booking.query.get_or_404(booking_id)
+    booking = db.first_or_404(
+        sa.select(Booking).where(
+            Booking.id == booking_id,
+            Booking.status == BookingStatus.PENDING.value
+    ))
 
     # Check if the logged-in user is the owner of the car
     if current_user == booking.car.owner:
         booking.status = BookingStatus.REJECTED.value
         booking.car.status = CarStatus.AVAILABLE.value
         db.session.commit()
-        flash('Booking request accepted!', 'success')
+        flash('Booking request rejected!', 'failed')
         return redirect(url_for('pending_requests', user_id=current_user.id))
+    else:
+        abort(403)
+
+
+@app.route('/cancel_request/<int:booking_id>')
+@login_required
+def cancel_request(booking_id):
+    booking = db.first_or_404(
+        sa.select(Booking).where(
+            Booking.id == booking_id,
+            Booking.status == BookingStatus.PENDING.value
+        )
+    )
+    if current_user == booking.renter:
+        booking.status = BookingStatus.PENDING.value
+        booking.car.status = CarStatus.AVAILABLE.value
+        db.session.commit()
+        flash('Booking request cancelled', 'failed')
+        return redirect(url_for('view_cars'))
     else:
         abort(403)
