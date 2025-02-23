@@ -312,10 +312,10 @@ def cancel_request(booking_id):
         )
     )
     if current_user == booking.renter:
-        booking.status = BookingStatus.PENDING.value
         booking.car.status = CarStatus.AVAILABLE.value
+        db.session.delete(booking)
         db.session.commit()
         flash('Booking request cancelled', 'failed')
-        return redirect(url_for('view_cars'))
+        return redirect(url_for('my_bookings', user_id=booking.renter_id))
     else:
         abort(403)
