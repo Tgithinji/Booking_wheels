@@ -4,7 +4,7 @@ from flask import Flask, request
 from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from flask_login import LoginManager
+from flask_login import LoginManager, current_user
 from flask_babel import Babel
 
 
@@ -24,6 +24,13 @@ login = LoginManager(app)
 login.login_view = 'user_login'
 
 babel = Babel(app, locale_selector=get_locale)
+
+
+@app.before_request
+def before_request():
+    from app.utils import check_and_update_bookings
+    if current_user.is_authenticated:
+        check_and_update_bookings()
 
 
 from app import routes, models, errors

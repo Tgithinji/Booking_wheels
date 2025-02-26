@@ -8,6 +8,7 @@ from app.models import User, Car, CarStatus, Booking, BookingStatus
 import sqlalchemy as sa
 from sqlalchemy.orm import joinedload
 from urllib.parse import urlsplit
+from datetime import date, timezone
 
 
 @app.route('/')
@@ -214,6 +215,11 @@ def book_car(car_id):
         start_date = form.start_date.data
         end_date = form.end_date.data
 
+        now = date.today()
+        if start_date > end_date or start_date < now:
+            flash('Choose relevant booking dates', 'failed')
+            return redirect(url_for('book_car', car_id=car.id))
+        
         # Check car availability (you need to implement this logic)
         if not Booking.is_available(car_id, start_date, end_date):
             flash('This car is already booked for the following dates', 'failed')
