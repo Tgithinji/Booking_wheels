@@ -19,14 +19,14 @@
             <tr>
                 <td>{{ booking.id }}</td>
                 <td>{{ booking.car.make }} {{ booking.car.model }}</td>
-                <td>{{ booking.start_date }}</td>
-                <td>{{ booking.end_date }}</td>
+                <td>{{ moment(booking.start_date).format('L') }}</td>
+                <td>{{ moment(booking.end_date).format('L') }}</td>
                 <td>{{ booking.status }}</td>
                 <td>{{ booking.car.owner.username }}</td>
                 <td></td>
-                <td><a href="{{url_for('view_car', car_id=booking.car.id) }}">View</a></td>
+                <td><a href="{{url_for('cars.view_car', car_id=booking.car.id) }}">View</a></td>
                 {% if booking.status == 'pending'%}
-                <td><a href="{{url_for('cancel_request', booking_id=booking.id)}}">Cancel Request</a></td>
+                <td><a href="{{url_for('bookings.cancel_request', booking_id=booking.id)}}">Cancel Request</a></td>
                 {% endif %}
             </tr>
             {% endfor %}

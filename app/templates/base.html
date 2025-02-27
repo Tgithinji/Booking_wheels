@@ -12,8 +12,6 @@
     <link rel="stylesheet" href="../static/styles/styles.css">
     <link rel="stylesheet" href="../static/styles/tables.css">
     <link rel="stylesheet" href="../static/styles/cards.css">
-    <script src="https://kit.fontawesome.com/c072e7f21e.js" crossorigin="anonymous"></script>
-    <script src="../static/scripts/nav.js" defer></script>
 </head>
 <body>
     <header class="header-section flex">
@@ -28,29 +26,32 @@
         <nav class="nav-section">
             <ul id="primary-nav" data-visible="false" class="primary-nav flex">
                 <li class="active">
-                    <a href="{{ url_for('index') }}">Home</a>
+                    <a href="{{ url_for('main.index') }}">Home</a>
                 </li>
                 <li>
-                    <a href="{{ url_for('view_cars') }}">Cars</a>
+                    <a href="{{ url_for('cars.view_cars') }}">Cars</a>
                 </li>
                 {% if current_user.is_anonymous %}
                 <li>
-                    <a href="{{ url_for('user_login') }}">Login</a>
+                    <a href="{{ url_for('auth.user_login') }}">Login</a>
                 </li>
                 {% else %}
                 <li>
-                    <a href="{{ url_for('new_car') }}">New</a>
+                    <a href="{{ url_for('cars.new_car') }}">New</a>
                 </li>
                 <li>
-                    <a href="{{ url_for('profile', username=current_user.username) }}">Profile</a>
+                    <a href="{{ url_for('users.profile', username=current_user.username) }}">Profile</a>
                 </li>
                 <li>
-                    <a href="{{ url_for('logout') }}">Logout</a>
+                    <a href="{{ url_for('auth.logout') }}">Logout</a>
                 </li>
                 {% endif %}
             </ul>
         </nav>
     </header>
         {% block content %}{% endblock %}
+        {{ moment.include_moment() }}
+        <script src="https://kit.fontawesome.com/c072e7f21e.js" crossorigin="anonymous"></script>
+        <script src="../static/scripts/nav.js" defer></script>
 </body>
 </html>

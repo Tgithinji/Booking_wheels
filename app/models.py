@@ -55,7 +55,7 @@ class Car(db.Model):
         index=True, default=lambda: datetime.now(timezone.utc))
     user_id:so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True)
     owner: so.Mapped[User] = so.relationship(back_populates='cars')
-    bookings: so.WriteOnlyMapped['Booking'] = so.relationship(back_populates='car', lazy='dynamic')
+    bookings: so.WriteOnlyMapped['Booking'] = so.relationship(back_populates='car', lazy='dynamic', passive_deletes=True)
 
     def __repr__(self):
         return '<Car {}>'.format(self.make)

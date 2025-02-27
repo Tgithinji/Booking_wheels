@@ -8,9 +8,9 @@
 
   {% if section == 'home' %}
   <div class="links flex">
-    <a href="{{ url_for('view_cars') }}">View fleet</a>
+    <a href="{{ url_for('cars.view_cars') }}">View fleet</a>
     {% if current_user.is_anonymous %}
-    <a href="{{ url_for('user_signup') }}">Create Account</a>
+    <a href="{{ url_for('auth.user_signup') }}">Create Account</a>
     {% endif %}
   </div>
   {% endif %}

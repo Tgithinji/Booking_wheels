@@ -6,6 +6,7 @@ email-validator==2.1.0.post1
 Flask==3.0.0
 Flask-Login==0.6.3
 Flask-Migrate==4.0.5
+Flask-Moment==1.0.6
 Flask-SQLAlchemy==3.1.1
 Flask-WTF==1.2.1
 greenlet==3.0.1

@@ -26,7 +26,7 @@
                 <td> {{ car.seats }}</td>
                 <td>{{ car.owner.username }}</td>
                 <td>{{ car.status }}</td>
-                <td><a href="{{url_for('view_car', car_id=car.id) }}">View</a></td>
+                <td><a href="{{url_for('cars.view_car', car_id=car.id) }}">View</a></td>
             </tr>
             {% endfor %}
             <tr>
