@@ -30,6 +30,16 @@
                 {% endif %}
             </tr>
             {% endfor %}
+            <tr>
+                <td colspan="8">
+                    {% if prev_url %}
+                    <a href="{{ prev_url }}">Prev</a>
+                    {% endif %}
+                    {% if next_url %}
+                    <a href="{{ next_url }}">Next</a>
+                    {% endif %}
+                </td>
+            </tr>
         </table>
     </div>
 {% endblock %}

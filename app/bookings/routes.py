@@ -1,5 +1,5 @@
 from app import db
-from flask import render_template, flash, redirect, url_for, abort
+from flask import render_template, flash, redirect, url_for, abort, request, current_app
 from flask_login import current_user, login_required
 from app.bookings.forms import BookingForm
 from app.models import User, Car, CarStatus, Booking, BookingStatus
@@ -51,12 +51,25 @@ def book_car(car_id):
 @bp.route('/bookings/<int:user_id>')
 @login_required
 def my_bookings(user_id):
+    page = request.args.get('page', 1, type=int)
     user = db.first_or_404(
         sa.select(User).where(User.id == user_id)
     )
     query = user.bookings.select().order_by(Booking.timestamp.desc())
-    bookings = db.session.scalars(query).all()
-    return render_template('bookings/my_bookings.html', bookings=bookings)
+    bookings = db.paginate(
+        query, page=page,
+        per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
+    )
+    next_url = url_for('bookings.my_bookings', user_id=user_id, page=bookings.next_num) if bookings.has_next else None
+    prev_url = url_for('bookings.my_bookings', user_id=user_id, page=bookings.prev_num) if bookings.has_prev else None
+
+    return render_template(
+        'bookings/my_bookings.html',
+        title='My Bookings',
+        bookings=bookings,
+        next_url=next_url,
+        prev_url=prev_url
+    )
 
 
 @bp.route('/requests/<int:user_id>')
