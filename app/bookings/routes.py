@@ -5,8 +5,9 @@ from app.bookings.forms import BookingForm
 from app.models import User, Car, CarStatus, Booking, BookingStatus
 import sqlalchemy as sa
 from sqlalchemy.orm import joinedload
-from datetime import date
+from datetime import date, datetime, timezone, timedelta
 from app.bookings import bp
+from app.jobs import schedule_car_booking
 
 
 @bp.route('/book/<int:car_id>', methods=['GET', 'POST'])
@@ -40,7 +41,7 @@ def book_car(car_id):
             status=BookingStatus.PENDING.value,
             renter=current_user
         )
-        car.status = CarStatus.PENDING.value
+        
         db.session.add(booking)
         db.session.commit()
         flash('Booking request!', 'success')
@@ -86,8 +87,17 @@ def accept_booking(booking_id):
     # Check if the logged-in user is the owner of the car
     if current_user == booking.car.owner:
         booking.status = BookingStatus.ACCEPTED.value
-        booking.car.status = CarStatus.BOOKED.value
         db.session.commit()
+
+        # check when booking starts and reserve for a day before
+        today = datetime.now()
+        if booking.start_date > today:
+            update_date = booking.start_date - timedelta(days=1)
+            schedule_car_booking(booking.car_id, update_date)
+        else:
+            booking.car.status = CarStatus.BOOKED.value
+            db.session.commit()
+
         flash('Booking request accepted!', 'success')
         return redirect(url_for('bookings.pending_requests', user_id=current_user.id))
     else:

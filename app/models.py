@@ -88,13 +88,21 @@ class Booking(db.Model):
 
     @staticmethod
     def is_available(car_id, start_date, end_date):
-        query = sa.select(Booking).where(
-            Booking.car_id == car_id,
-            Booking.status == BookingStatus.ACCEPTED.value,
-            Booking.start_date < end_date,
-            Booking.end_date > start_date
-        )
-        return db.session.scalar(query) is None
+        existing_booking = db.session.execute(
+            sa.select(Booking.start_date, Booking.end_date)
+            .where(
+                Booking.car_id == car_id,
+                Booking.status == BookingStatus.ACCEPTED.value,
+                sa.or_(
+                    sa.and_(start_date >= Booking.start_date, start_date < Booking.end_date),
+                    sa.and_(end_date > Booking.start_date, end_date <= Booking.end_date),
+                    sa.and_(start_date <= Booking.start_date, end_date > Booking.end_date),
+                    sa.and_(end_date == Booking.start_date)
+                )
+            )
+        ).fetchall()
+
+        return not existing_booking
 
     def __repr__(self):
         return '<Status {}>'.format(self.status)
