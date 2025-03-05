@@ -13,6 +13,8 @@ from app.jobs import schedule_car_booking
 @bp.route('/book/<int:car_id>', methods=['GET', 'POST'])
 @login_required
 def book_car(car_id):
+    if current_user.is_admin():
+        abort(403)
     car = db.first_or_404(
         sa.select(Car).where(Car.id == car_id)
     )
@@ -51,6 +53,8 @@ def book_car(car_id):
 @bp.route('/bookings/<int:user_id>')
 @login_required
 def my_bookings(user_id):
+    if current_user.is_admin():
+        abort(403)
     page = request.args.get('page', 1, type=int)
     user = db.first_or_404(
         sa.select(User).where(User.id == user_id)
@@ -78,6 +82,8 @@ def pending_requests(user_id):
     """
     Retrieve booking requests for cars owned by the current user (car owner)
     """
+    if not current_user.is_admin():
+        abort(403)
     pending_requests = (
         db.session.query(Booking)
         .join(Car)
@@ -93,6 +99,8 @@ def pending_requests(user_id):
 @bp.route('/accept_booking/<int:booking_id>')
 @login_required
 def accept_booking(booking_id):
+    if not current_user.is_admin():
+        abort(403)
     booking = db.first_or_404(
         sa.select(Booking).where(Booking.id == booking_id)
     )
@@ -120,6 +128,8 @@ def accept_booking(booking_id):
 @bp.route('/reject_booking/<int:booking_id>')
 @login_required
 def reject_booking(booking_id):
+    if not current_user.is_admin():
+        abort(403)
     booking = db.first_or_404(
         sa.select(Booking).where(
             Booking.id == booking_id,

@@ -32,6 +32,8 @@ def view_cars():
 @bp.route('/cars/<int:user_id>')
 @login_required
 def manage_cars(user_id):
+    if not current_user.is_admin():
+        abort(403)
     user = db.first_or_404(
         sa.select(User).where(User.id == user_id)
     )
@@ -54,6 +56,8 @@ def manage_cars(user_id):
 @bp.route('/car/new', methods=['GET', 'POST'])
 @login_required
 def new_car():
+    if not current_user.is_admin():
+        abort(403)
     form = NewCar()
     if form.validate_on_submit():
         car = Car(make=form.make.data, model=form.model.data,
@@ -79,6 +83,8 @@ def view_car(car_id):
 @bp.route('/car/<int:car_id>/update', methods=['GET', 'POST'])
 @login_required
 def update_car(car_id):
+    if not current_user.is_admin():
+        abort(403)
     car = db.first_or_404(
         sa.select(Car).where(Car.id == car_id)
     )
@@ -111,6 +117,8 @@ def update_car(car_id):
 @bp.route('/car/<int:car_id>/delete', methods=['GET', 'POST'])
 @login_required
 def delete_car(car_id):
+    if not current_user.is_admin():
+        abort(403)
     car = db.first_or_404(
         sa.select(Car).where(Car.id == car_id)
     )

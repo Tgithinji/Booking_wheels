@@ -15,7 +15,8 @@ def user_signup():
         return redirect(url_for('main.index'))
     form = UserSignupForm()
     if form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data)
+        role = 'admin' if form.is_admin.data else 'user'
+        user = User(username=form.username.data, email=form.email.data, role=role)
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()

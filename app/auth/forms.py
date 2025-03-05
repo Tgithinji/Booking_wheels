@@ -15,6 +15,7 @@ class SignupForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     confirm_password = PasswordField('Confirm Password',
                                      validators=[DataRequired(), EqualTo('password')])
+    is_admin = BooleanField('Register as car owner')
     submit = SubmitField('Sign up')
 
 

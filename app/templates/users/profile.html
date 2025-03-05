@@ -8,9 +8,12 @@
         <h1>Hi, {{ user.username }}!</h1>
         <div class="profile-links">
             <a href="{{ url_for('users.edit_profile') }}">Edit your profile</a>
+            {% if user.is_admin() %}
             <a href="{{ url_for('cars.manage_cars', user_id=current_user.id) }}">Manage Fleet</a>
-            <a href="{{ url_for('bookings.my_bookings', user_id=current_user.id) }}">My Bookings</a>
             <a href="{{ url_for('bookings.pending_requests', user_id=current_user.id) }}">Booking Requests</a>
+            {% else %}
+            <a href="{{ url_for('bookings.my_bookings', user_id=current_user.id) }}">My Bookings</a>
+            {% endif %}
         </div>
         {% else %}
         <h1>{{ user.username }}</h1>

@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="errors">
+        <h1>Operation is forbidden.</h1>
+        <p><a href="{{ url_for('main.index') }}">Home</a></p>
+    </div>
+{% endblock %}

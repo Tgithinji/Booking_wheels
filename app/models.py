@@ -18,6 +18,7 @@ class User(UserMixin, db.Model):
     password_hash: so.Mapped[Optional[str]] = so.mapped_column(sa.String(128))
     cars: so.WriteOnlyMapped['Car'] = so.relationship(back_populates='owner', lazy='dynamic')
     bookings: so.WriteOnlyMapped['Booking'] = so.relationship(back_populates='renter', lazy='dynamic')
+    role: so.Mapped[str] = so.mapped_column(sa.String(100), default='user')
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
@@ -31,6 +32,9 @@ class User(UserMixin, db.Model):
     def avatar(self, size):
         digest = md5(self.email.lower().encode('utf-8')).hexdigest()
         return f'https://www.gravatar.com/avatar/{digest}?d=identicon&s={size}'
+    
+    def is_admin(self):
+        return self.role == 'admin'
 
 
 class CarStatus(Enum):

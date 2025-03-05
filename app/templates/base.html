@@ -36,9 +36,11 @@
                     <a href="{{ url_for('auth.user_login') }}">Login</a>
                 </li>
                 {% else %}
+                    {% if current_user.is_admin() %}
                 <li>
                     <a href="{{ url_for('cars.new_car') }}">New</a>
                 </li>
+                    {% endif %}
                 <li>
                     <a href="{{ url_for('users.profile', username=current_user.username) }}">Profile</a>
                 </li>

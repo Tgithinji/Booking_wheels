@@ -13,3 +13,4 @@ def check_and_update_bookings():
     for booking in expired_bookings:
         booking.car.status = CarStatus.AVAILABLE.value
         booking.status = 'completed'
+
