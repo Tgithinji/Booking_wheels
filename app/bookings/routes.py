@@ -10,6 +10,22 @@ from app.bookings import bp
 from app.jobs import schedule_car_booking
 
 
+@bp.app_context_processor
+def inject_pending_count():
+    if current_user.is_authenticated and current_user.is_admin():
+        pending_count = (
+            db.session.query(Booking)
+            .join(Car)
+            .filter(
+                Car.user_id == current_user.id,
+                Booking.status == BookingStatus.PENDING.value
+            )
+            .count()
+        )
+        return dict(pending_count=pending_count)
+    return dict(pending_count=0)
+
+
 @bp.route('/book/<int:car_id>', methods=['GET', 'POST'])
 @login_required
 def book_car(car_id):

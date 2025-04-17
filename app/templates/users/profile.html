@@ -10,7 +10,11 @@
             <a href="{{ url_for('users.edit_profile') }}">Edit your profile</a>
             {% if user.is_admin() %}
             <a href="{{ url_for('cars.manage_cars', user_id=current_user.id) }}">Manage Fleet</a>
-            <a href="{{ url_for('bookings.pending_requests', user_id=current_user.id) }}">Booking Requests</a>
+            <a href="{{ url_for('bookings.pending_requests', user_id=current_user.id) }}">Booking Requests
+                {% if pending_count > 0 %}
+                <span class="notification-badge">{{ pending_count }}</span>
+                {% endif %}
+            </a>
             {% else %}
             <a href="{{ url_for('bookings.my_bookings', user_id=current_user.id) }}">My Bookings</a>
             {% endif %}

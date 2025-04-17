@@ -42,7 +42,11 @@
                 </li>
                     {% endif %}
                 <li>
-                    <a href="{{ url_for('users.profile', username=current_user.username) }}">Profile</a>
+                    <a href="{{ url_for('users.profile', username=current_user.username) }}">Profile
+                        {% if pending_count > 0 %}
+                        <span class="notification-badge">{{ pending_count }}</span>
+                        {% endif %}
+                    </a>
                 </li>
                 <li>
                     <a href="{{ url_for('auth.logout') }}">Logout</a>
