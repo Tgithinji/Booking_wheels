@@ -47,7 +47,7 @@ def book_car(car_id):
         db.session.add(booking)
         db.session.commit()
         flash('Booking request!', 'success')
-        return redirect(url_for('bookings.my_bookings', user_id=current_user.id))
+        return redirect(url_for('bookings.view_booking', booking_id=booking.id))
     return render_template('bookings/book_car.html', form=form, title='Book Car', car=car, section='section')
 
 @bp.route('/bookings/<int:user_id>')
