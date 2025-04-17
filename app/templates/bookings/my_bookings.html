@@ -5,7 +5,7 @@
     {% include 'flash_message.html' %}
         <table>
             <caption>
-                List of vehicles
+                My bookings
             </caption>
             <tr>
                 <th>#</th>
@@ -13,7 +13,6 @@
                 <th>Start-date</th>
                 <th>End-date</th>
                 <th>Booking status</th>
-                <th>Owner</th>
             </tr>
             {% for booking in bookings %}
             <tr>
@@ -22,21 +21,21 @@
                 <td>{{ moment(booking.start_date).format('L') }}</td>
                 <td>{{ moment(booking.end_date).format('L') }}</td>
                 <td>{{ booking.status }}</td>
-                <td>{{ booking.car.owner.username }}</td>
                 <td></td>
-                <td><a href="{{url_for('cars.view_car', car_id=booking.car.id) }}">View</a></td>
+                <td><a href="{{url_for('bookings.view_booking', booking_id=booking.id) }}">View</a></td>
+                
                 {% if booking.status == 'pending'%}
                 <td><a href="{{url_for('bookings.cancel_request', booking_id=booking.id)}}">Cancel Request</a></td>
                 {% endif %}
             </tr>
             {% endfor %}
             <tr>
-                <td colspan="8">
+                <td colspan="8" class="pagination">
                     {% if prev_url %}
-                    <a href="{{ prev_url }}">Prev</a>
+                    <a href="{{ prev_url }}" class="pagination-link">Prev</a>
                     {% endif %}
                     {% if next_url %}
-                    <a href="{{ next_url }}">Next</a>
+                    <a href="{{ next_url }}" class="pagination-link">Next</a>
                     {% endif %}
                 </td>
             </tr>

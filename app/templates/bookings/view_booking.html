@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="cointainer">
+    <div class="booking-details">
+        <h2 class="booking-title">Booking Details</h2>
+        <p class="detail-label">Booking ID:</p>
+        <p class="detail-value">{{ booking.id }}</p>
+        <p class="detail-label">Car Model:</p>
+        <p class="detail-value">{{ booking.car.make }} {{ booking.car.model }}</p>
+        <p class="detail-label">Pickup Date:</p>
+        <p class="detail-value">{{ moment(booking.start_date).format('L') }}</p>
+        <p class="detail-label">Return Date:</p>
+        <p class="detail-value">{{ moment(booking.end_date).format('L') }}</p>
+        <p class="detail-label">Total Price:</p>
+        <p class="detail-value">$500</p>
+        <div class="booking-confirmation">
+            Booking {{ booking.status }}!
+        </div>
+    </div>
+</div>
+{% endblock %}

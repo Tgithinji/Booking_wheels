@@ -1,44 +1,30 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="table-container">
     {% include 'flash_message.html' %}
-        <table>
-            <caption>
-                List of vehicles
-            </caption>
-            <tr>
-                <th>#</th>
-                <th>Vehicle name</th>
-                <th>Reg No.</th>
-                <th>YOM</th>
-                <th>Seats</th>
-                <th>Owner</th>
-                <th>Status</th>
-                <td>Action</td>
-            </tr>
+    <div class="container">
+        <div class="grid">
             {% for car in fleet %}
-            <tr>
-                <td>{{ car.id }}</td>
-                <td>{{ car.make }} {{ car.model }}</td>
-                <td>{{ car.reg_num }}</td>
-                <td>{{ car.year }}</td>
-                <td> {{ car.seats }}</td>
-                <td>{{ car.owner.username }}</td>
-                <td>{{ car.status }}</td>
-                <td><a href="{{url_for('cars.view_car', car_id=car.id) }}">View</a></td>
-            </tr>
+            <div class="car-card2">
+                <img src="../../static/images/default_car.png" alt="{{ car.make }}" class="car-image">
+                <div class="car-details">
+                    <h2 class="car-name">{{ car.make }} {{ car.model }}</h2>
+                    <p class="car-price">Price: 0 per hour</p>
+                    <p class="spec">YOM: <span>{{ car.year }}</span></p>
+                    <p class="spec">Fuel Type: <span>{{ car.fuel_type }}</span></p>
+                    
+                    <p class="button"><a href="{{url_for('cars.view_car', car_id=car.id) }}">View</a></p>
+                </div>
+            </div>
             {% endfor %}
-            <tr>
-                <td colspan="8">
-                    {% if prev_url %}
-                    <a href="{{ prev_url }}">Prev</a>
-                    {% endif %}
-                    {% if next_url %}
-                    <a href="{{ next_url }}">Next</a>
-                    {% endif %}
-                </td>
-            </tr>
-        </table>
+            <div class="pagination">
+                {% if prev_url %}
+                <a href="{{ prev_url }}" class="pagination-link">Prev</a>
+                {% endif %}
+                {% if next_url %}
+                <a href="{{ next_url }}" class="pagination-link">Next</a>
+                {% endif %}
+            </div>
+        </div>
     </div>
 {% endblock %}

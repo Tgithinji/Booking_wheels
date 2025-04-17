@@ -48,7 +48,7 @@ def book_car(car_id):
         db.session.commit()
         flash('Booking request!', 'success')
         return redirect(url_for('bookings.my_bookings', user_id=current_user.id))
-    return render_template('bookings/book_car.html', form=form, title='Book Car', car=car)
+    return render_template('bookings/book_car.html', form=form, title='Book Car', car=car, section='section')
 
 @bp.route('/bookings/<int:user_id>')
 @login_required
@@ -74,6 +74,16 @@ def my_bookings(user_id):
         next_url=next_url,
         prev_url=prev_url
     )
+
+
+@bp.route('/booking/<int:booking_id>')
+@login_required
+def view_booking(booking_id):
+    booking = db.first_or_404(
+        sa.select(Booking).where(Booking.id == booking_id)
+    )
+    return render_template('bookings/view_booking.html', booking=booking, title='Bookings')
+
 
 
 @bp.route('/requests/<int:user_id>')
@@ -112,7 +122,8 @@ def accept_booking(booking_id):
 
         # check when booking starts and reserve for a day before
         today = datetime.now()
-        if booking.start_date > today:
+        tomorrow = today + timedelta(days=1)
+        if booking.start_date > tomorrow:
             update_date = booking.start_date - timedelta(days=1)
             schedule_car_booking(booking.car_id, update_date)
         else:

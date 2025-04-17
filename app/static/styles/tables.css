@@ -1,11 +1,18 @@
 .table-container {
-    max-width: 80%;
     overflow-x: auto;
-    margin: auto;
+    margin-left: auto;
+    margin-right: auto;
     margin-top: 100px;
+    
 }
-table {
-    width: 80%;
+
+table { 
+    margin-left: auto;
+    margin-right: auto; 
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-bottom: 2rem;
+    padding-top: 2rem;
     border-collapse: collapse;
     background: #323232;
     color: #eee;
@@ -33,4 +40,23 @@ th {
 
 tr:nth-of-type(2n) {
     background: rgba(0, 0, 0, .1)
+}
+
+table a {
+    background-color: #e53e3e;
+    color: white;
+    padding: 0.2rem;
+    text-decoration: none;
+    font-family: "abhaya", serif;
+    font-size: 1rem;
+    border: none;
+    border-radius: 0.2rem;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease;
+}
+
+table a:hover {
+    background-color: #c53030;
 }

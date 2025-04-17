@@ -2,7 +2,7 @@ from app import db
 from flask import render_template, flash, redirect, url_for, request, abort, current_app
 from flask_login import current_user, login_required
 from app.cars.forms import NewCar
-from app.models import User, Car, CarStatus
+from app.models import User, Car, CarStatus, Booking, BookingStatus
 import sqlalchemy as sa
 from app.cars import bp
 
@@ -80,40 +80,6 @@ def view_car(car_id):
     return render_template('cars/view_car.html', car=car, title=car.make)
 
 
-@bp.route('/car/<int:car_id>/update', methods=['GET', 'POST'])
-@login_required
-def update_car(car_id):
-    if not current_user.is_admin():
-        abort(403)
-    car = db.first_or_404(
-        sa.select(Car).where(Car.id == car_id)
-    )
-    if car.owner != current_user:
-        abort(403)
-    form = NewCar()
-    if form.validate_on_submit():
-        car.make = form.make.data
-        car.model = form.model.data
-        car.year = form.year.data
-        car.reg_num = form.reg_num.data
-        car.fuel_type = form.fuel_type.data
-        car.seats = form.seats.data
-        car.mileage = form.mileage.data
-        db.session.commit()
-        flash('Your changes have been saved.', 'success')
-        return redirect(url_for('cars.view_car', car_id=car_id))
-    elif request.method == 'GET':
-        form.make.data = car.make
-        form.model.data = car.model
-        form.year.data = car.year
-        form.reg_num.data = car.reg_num
-        form.fuel_type.data = car.fuel_type
-        form.seats.data = car.seats
-        form.mileage.data = car.mileage
-    return render_template('cars/add_new.html', title='UpdateCar',
-                           form=form, heading='Update Car', section='section')
-
-
 @bp.route('/car/<int:car_id>/delete', methods=['GET', 'POST'])
 @login_required
 def delete_car(car_id):
@@ -122,8 +88,15 @@ def delete_car(car_id):
     car = db.first_or_404(
         sa.select(Car).where(Car.id == car_id)
     )
-    if car.owner != current_user:
+    bookings = db.session.scalars(
+        sa.select(Booking).where(
+            Booking.car_id == car_id,
+            Booking.status == BookingStatus.ACCEPTED.value
+        )
+    ).all()
+    if bookings or car.owner != current_user:
         abort(403)
+    
     db.session.delete(car)
     db.session.commit()
     flash('{} has been deleted successfully!'.format(car.make), 'success')
