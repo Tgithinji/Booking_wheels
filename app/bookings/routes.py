@@ -8,6 +8,7 @@ from sqlalchemy.orm import joinedload
 from datetime import date, datetime, timezone, timedelta
 from app.bookings import bp
 from app.jobs import schedule_car_booking
+from sqlalchemy import or_, and_
 
 
 @bp.app_context_processor
@@ -130,6 +131,25 @@ def accept_booking(booking_id):
     booking = db.first_or_404(
         sa.select(Booking).where(Booking.id == booking_id)
     )
+
+    conflict = db.session.scalar(
+    sa.select(sa.exists().where(
+        Booking.car_id == booking.car_id,
+        Booking.status == BookingStatus.ACCEPTED.value,
+        Booking.id != booking.id,
+        or_(
+            and_(Booking.start_date <= booking.start_date, Booking.end_date >= booking.start_date),
+            and_(Booking.start_date <= booking.end_date, Booking.end_date >= booking.end_date),
+            and_(Booking.start_date >= booking.start_date, Booking.end_date <= booking.end_date),
+        )
+    ))
+    )
+
+    if conflict:
+        flash('This car already has a booking that overlaps with the requested dates.', 'failed')
+        booking.status = BookingStatus.REJECTED.value
+        db.session.commit()
+        return redirect(url_for('bookings.pending_requests', user_id=current_user.id))
 
     # Check if the logged-in user is the owner of the car
     if current_user == booking.car.owner:
