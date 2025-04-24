@@ -13,10 +13,13 @@
         <p class="detail-label">Return Date:</p>
         <p class="detail-value">{{ moment(booking.end_date).format('L') }}</p>
         <p class="detail-label">Total Price:</p>
-        <p class="detail-value">$500</p>
+        <p class="detail-value">${{ booking.total_price }}</p>
         <div class="booking-confirmation">
             Booking {{ booking.status }}!
         </div>
+        {% if booking.status == 'Pending'%}
+        <div><a href="{{url_for('bookings.cancel_request', booking_id=booking.id)}}" class="booking-details-link">Cancel Request</a></div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

@@ -5,6 +5,7 @@ from app.cars.forms import NewCar
 from app.models import User, Car, CarStatus, Booking, BookingStatus
 import sqlalchemy as sa
 from app.cars import bp
+from app.utils import save_picture
 
 
 @bp.route('/cars')
@@ -60,10 +61,17 @@ def new_car():
         abort(403)
     form = NewCar()
     if form.validate_on_submit():
+        car_price = form.price.data or 50
+        if form.picture.data:
+            picture_file = save_picture(form.picture.data)
+            car_image = picture_file
+        else:
+            car_image = 'default_car.png'
         car = Car(make=form.make.data, model=form.model.data,
                   year=form.year.data, reg_num=form.reg_num.data,
                   owner=current_user, fuel_type=form.fuel_type.data,
-                  seats=form.seats.data, mileage = form.mileage.data)
+                  seats=form.seats.data, mileage = form.mileage.data,
+                  price=car_price, image=car_image)
         db.session.add(car)
         db.session.commit()
         flash('Car added successfully!', 'success')

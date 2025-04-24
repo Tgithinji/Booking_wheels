@@ -38,9 +38,9 @@ class User(UserMixin, db.Model):
 
 
 class CarStatus(Enum):
-    PENDING = 'pending'
-    AVAILABLE = 'available'
-    BOOKED = 'booked'
+    PENDING = 'Pending'
+    AVAILABLE = 'Available'
+    BOOKED = 'Booked'
 
 
 class Car(db.Model):
@@ -60,15 +60,17 @@ class Car(db.Model):
     user_id:so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True)
     owner: so.Mapped[User] = so.relationship(back_populates='cars')
     bookings: so.WriteOnlyMapped['Booking'] = so.relationship(back_populates='car', lazy='dynamic', passive_deletes=True)
-
+    price: so.Mapped[int] = so.mapped_column(sa.Integer(), default=50)
+    image: so.Mapped[str] = so.mapped_column(sa.String(500), default="default_car.png")
+    
     def __repr__(self):
         return '<Car {}>'.format(self.make)
 
 
 class BookingStatus(Enum):
-    PENDING = "pending"
-    ACCEPTED = "accepted"
-    REJECTED = "rejected"
+    PENDING = "Pending"
+    ACCEPTED = "Accepted"
+    REJECTED = "Rejected"
 
 
 class Booking(db.Model):
@@ -89,7 +91,8 @@ class Booking(db.Model):
    
     renter:so.Mapped[User] = so.relationship(back_populates='bookings')
     car: so.Mapped[Car] = so.relationship(back_populates='bookings')
-
+    total_price: so.Mapped[int] = so.mapped_column(sa.Integer(), default=50)
+    
     @staticmethod
     def is_available(car_id, start_date, end_date):
         existing_booking = db.session.execute(

@@ -42,7 +42,8 @@ tr:nth-of-type(2n) {
     background: rgba(0, 0, 0, .1)
 }
 
-table a {
+table a,
+.booking-details-link {
     background-color: #e53e3e;
     color: white;
     padding: 0.2rem;
@@ -57,6 +58,11 @@ table a {
     transition: background-color 0.3s ease;
 }
 
-table a:hover {
+.booking-details-link{
+    display: block
+}
+
+table a:hover,
+.booking-details-link:hover {
     background-color: #c53030;
 }

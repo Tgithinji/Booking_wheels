@@ -5,10 +5,11 @@ from app.bookings.forms import BookingForm
 from app.models import User, Car, CarStatus, Booking, BookingStatus
 import sqlalchemy as sa
 from sqlalchemy.orm import joinedload
-from datetime import date, datetime, timezone, timedelta
+from datetime import date, datetime, timedelta
 from app.bookings import bp
 from app.jobs import schedule_car_booking
 from sqlalchemy import or_, and_
+from app.utils import calculate_booking_price
 
 
 @bp.app_context_processor
@@ -51,6 +52,7 @@ def book_car(car_id):
             flash('This car is already booked for the following dates', 'failed')
             return redirect(url_for('bookings.book_car', car_id=car_id))
         
+        booking_price = calculate_booking_price(car, start_date, end_date)
         # create booking
         booking = Booking(
             car_id=car_id,
@@ -58,7 +60,8 @@ def book_car(car_id):
             start_date=start_date,
             end_date=end_date,
             status=BookingStatus.PENDING.value,
-            renter=current_user
+            renter=current_user,
+            total_price=booking_price
         )
         
         db.session.add(booking)
