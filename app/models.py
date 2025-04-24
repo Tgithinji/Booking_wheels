@@ -1,5 +1,6 @@
 """Database Models"""
 from app import db, login
+from itsdangerous import URLSafeSerializer as Serializer
 from datetime import datetime, timezone, timedelta
 from enum import Enum
 from flask_login import UserMixin
@@ -8,6 +9,7 @@ from typing import Optional
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlalchemy as sa
 import sqlalchemy.orm as so
+from flask import current_app
 
 
 class User(UserMixin, db.Model):
@@ -20,6 +22,19 @@ class User(UserMixin, db.Model):
     bookings: so.WriteOnlyMapped['Booking'] = so.relationship(back_populates='renter', lazy='dynamic')
     role: so.Mapped[str] = so.mapped_column(sa.String(100), default='user')
 
+    def get_reset_token(self, expire_sec=1800):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        return s.dumps({'user_id': self.id})
+    
+    @staticmethod
+    def verify_reset_token(token):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        try:
+            user_id = s.loads(token)['user_id']
+        except:
+            return None
+        return db.session.get(User, user_id)
+    
     def __repr__(self):
         return '<User {}>'.format(self.username)
 

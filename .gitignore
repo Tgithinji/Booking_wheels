@@ -3,3 +3,4 @@ venv
 app.db
 .flaskenv
 logs/
+.env

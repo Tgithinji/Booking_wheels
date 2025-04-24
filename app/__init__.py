@@ -6,6 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_moment import Moment
+from flask_mail import Mail
 import logging
 from logging.handlers import RotatingFileHandler
 import os
@@ -16,7 +17,7 @@ migrate = Migrate()
 # Flask-Login initialization
 login = LoginManager()
 login.login_view = 'auth.user_login'
-
+mail= Mail()
 moment = Moment()
 
 
@@ -31,7 +32,8 @@ def create_app(config_class=Config):
     migrate.init_app(app, db)
     login.init_app(app)
     moment.init_app(app)
-
+    mail.init_app(app)
+    
     from app.errors import bp as errors_bp
     app.register_blueprint(errors_bp)
 
