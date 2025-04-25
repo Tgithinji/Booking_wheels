@@ -17,7 +17,7 @@ class User(UserMixin, db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     username: so.Mapped[str] = so.mapped_column(sa.String(64), index=True, unique=True)
     email: so.Mapped[str] = so.mapped_column(sa.String(120), index=True, unique=True)
-    password_hash: so.Mapped[Optional[str]] = so.mapped_column(sa.String(128))
+    password_hash: so.Mapped[Optional[str]] = so.mapped_column(sa.String(256))
     cars: so.WriteOnlyMapped['Car'] = so.relationship(back_populates='owner', lazy='dynamic')
     bookings: so.WriteOnlyMapped['Booking'] = so.relationship(back_populates='renter', lazy='dynamic')
     role: so.Mapped[str] = so.mapped_column(sa.String(100), default='user')
