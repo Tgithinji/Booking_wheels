@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-    {% include 'flash_message.html' %}
+    
     <div class="container">
+        {% include 'flash_message.html' %}
         <div class="grid">
             {% for car in fleet %}
             <div class="car-card2">
@@ -14,6 +15,7 @@
                     <p class="spec">Fuel Type: <span>{{ car.fuel_type }}</span></p>
                     
                     <p class="button"><a href="{{url_for('cars.view_car', car_id=car.id) }}">View</a></p>
+                    <p class="button"><a href="{{ url_for('bookings.book_car', car_id=car.id) }}">Book Now</a></p>
                 </div>
             </div>
             {% endfor %}

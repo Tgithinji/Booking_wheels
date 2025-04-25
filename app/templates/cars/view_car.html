@@ -2,7 +2,7 @@
 
 {% block content %}
     <div class="car-card">
-        <img src="{{  url_for('static', filename='images/' + car.image)  }}" alt="{{ car.make }}" class="car-image">
+        <img src="{{  url_for('static', filename='images/' + car.image)  }}" alt="{{ car.make }}" class="car-image-2">
         <div class="car-details">
             <h2 class="car-name">{{ car.make }} {{ car.model }}</h2>
             <p class="car-price">Price: <span>{{ car.price }}</span> per day</p>

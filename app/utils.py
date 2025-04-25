@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 import secrets
 import os
 from flask import current_app
-from PIL import Image
+from PIL import Image, ImageOps
 
 
 def check_and_update_bookings():
@@ -24,11 +24,19 @@ def save_picture(form_picture):
     _ , f_ext = os.path.splitext(form_picture.filename)
     picture_fn = random_hex + f_ext
     picture_path = os.path.join(current_app.root_path, 'static/images', picture_fn)
-    output_size = (800, 400)
-    image = Image.open(form_picture)
-    image.thumbnail(output_size)
-    image.save(picture_path)
+   
+    target_size = (800, 600)
 
+    img = Image.open(form_picture)
+    # create a blank canvas with background
+    background = Image.new('RGB', target_size, (248,248,248))
+    # scale the image to fit within target_size, preserving aspect
+    img.thumbnail(target_size, Image.LANCZOS)
+    # center it on the background
+    x = (target_size[0] - img.width) // 2
+    y = (target_size[1] - img.height) // 2
+    background.paste(img, (x, y))
+    background.save(picture_path, quality=85)
     return picture_fn
 
 
