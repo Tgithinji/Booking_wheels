@@ -1,10 +1,12 @@
 # Booking Wheels
 
-****Your trusted companion for car hire services.****
+\***\*Your trusted companion for car hire services.\*\***
 
 ## Introduction
 
 Booking Wheels is a car hire service platform where a user is able to sign up, login and book a vehicle for a period of time. A user is also able to sign up as a car owner to post a car for booking
+
+[View live page](https://githinjiguru.pythonanywhere.com/)
 
 ### Technology Stack
 
@@ -22,6 +24,7 @@ Booking Wheels is a car hire service platform where a user is able to sign up, l
 
 - MYSQL for the server
 - SQLITE for local development
+- Hosted on [pythonanywhere](https://www.pythonanywhere.com)
 
 ## Installation
 
